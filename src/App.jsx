@@ -11,7 +11,7 @@ export default function App() {
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('bmdc_theme_pref');
     if (saved === 'light' || saved === 'dark') return saved;
-    return 'dark';
+    return 'light';
   });
   const [currentDoctorType, setCurrentDoctorType] = useState('MBBS');
   const [viewState, setViewState] = useState('idle'); // 'idle' | 'initializing' | 'verifying' | 'result' | 'error'
