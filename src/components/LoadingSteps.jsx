@@ -117,7 +117,7 @@ export default function LoadingSteps({ viewState, theme = 'light', regNo = '', d
 
       {/* Progress Bar */}
       <div className="space-y-1.5">
-        <div className={`w-full h-2 rounded-full overflow-hidden ${
+        <div className={`w-full h-1.5 rounded-full overflow-hidden ${
           isDark ? 'bg-[#07170c]' : 'bg-slate-100'
         }`}>
           <div
@@ -129,90 +129,99 @@ export default function LoadingSteps({ viewState, theme = 'light', regNo = '', d
         </div>
       </div>
 
-      {/* Steps List */}
-      <div className="space-y-4 pt-1">
-        {steps.map((step, idx) => {
-          const isDone = idx < currentStep;
-          const isActive = idx === currentStep;
-          const isPending = idx > currentStep;
-          const Icon = step.icon;
+      {/* Modern Steps Timeline (Zero Box Nesting) */}
+      <div className="pt-2 px-1 sm:px-2">
+        <div className="relative">
+          {steps.map((step, idx) => {
+            const isDone = idx < currentStep;
+            const isActive = idx === currentStep;
+            const isPending = idx > currentStep;
+            const isLast = idx === steps.length - 1;
 
-          return (
-            <div
-              key={idx}
-              className={`flex items-start space-x-4 p-4 rounded-2xl border transition-all duration-300 ${
-                isActive
-                  ? isDark
-                    ? 'border-[#d4f870]/40 bg-[#11381d]/50 shadow-xs'
-                    : 'border-emerald-500/40 bg-emerald-50/60 shadow-xs'
-                  : isDone
-                  ? isDark
-                    ? 'border-transparent bg-[#11381d]/20 opacity-85'
-                    : 'border-transparent bg-slate-50 opacity-90'
-                  : isDark
-                  ? 'border-transparent opacity-40'
-                  : 'border-transparent opacity-40'
-              }`}
-            >
-              {/* Step Status Icon */}
-              <div className="pt-0.5 shrink-0">
-                {isDone ? (
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs ${
-                    isDark ? 'bg-[#d4f870] text-[#07170c]' : 'bg-emerald-600 text-white'
-                  }`}>
-                    <Check className="w-4 h-4 stroke-[3]" />
-                  </div>
-                ) : isActive ? (
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center border-2 ${
-                    isDark ? 'border-[#d4f870] text-[#d4f870]' : 'border-[#0a2e16] text-[#0a2e16]'
-                  }`}>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  </div>
-                ) : (
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center border font-bold text-xs ${
-                    isDark ? 'border-zinc-700 text-zinc-600 bg-zinc-900/40' : 'border-slate-300 text-slate-400 bg-white'
-                  }`}>
-                    <span>{idx + 1}</span>
-                  </div>
+            return (
+              <div key={idx} className="relative flex items-start gap-4 sm:gap-5 pb-7 last:pb-1">
+                {/* Vertical connecting line between step nodes */}
+                {!isLast && (
+                  <div
+                    className={`absolute left-4 top-8 bottom-0 w-[2px] -translate-x-1/2 transition-colors duration-500 ${
+                      isDone
+                        ? isDark ? 'bg-[#d4f870]' : 'bg-emerald-500'
+                        : isDark ? 'bg-zinc-800' : 'bg-slate-200'
+                    }`}
+                  />
                 )}
-              </div>
 
-              {/* Step Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2">
-                  <h4 className={`text-sm font-bold tracking-tight ${
-                    isActive
-                      ? isDark ? 'text-[#d4f870]' : 'text-slate-900 font-extrabold'
-                      : isDone
-                      ? isDark ? 'text-zinc-200' : 'text-slate-800'
-                      : isDark ? 'text-zinc-500' : 'text-slate-400'
-                  }`}>
-                    {step.title}
-                  </h4>
-                  {isActive && (
-                    <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
-                      isDark ? 'bg-[#d4f870]/20 text-[#d4f870]' : 'bg-[#0a2e16]/10 text-[#0a2e16]'
+                {/* Step Status Icon Node */}
+                <div className="relative z-10 shrink-0">
+                  {isDone ? (
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                      isDark ? 'bg-[#d4f870] text-[#07170c]' : 'bg-emerald-600 text-white'
                     }`}>
-                      In Progress
-                    </span>
-                  )}
-                  {isDone && (
-                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                      Completed
-                    </span>
+                      <Check className="w-4 h-4 stroke-[3]" />
+                    </div>
+                  ) : isActive ? (
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all ${
+                      isDark
+                        ? 'border-[#d4f870] bg-[#11381d] text-[#d4f870]'
+                        : 'border-[#0a2e16] bg-emerald-50 text-[#0a2e16]'
+                    }`}>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    </div>
+                  ) : (
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border text-xs font-bold transition-all ${
+                      isDark
+                        ? 'border-zinc-800 bg-[#07170c] text-zinc-600'
+                        : 'border-slate-200 bg-white text-slate-400'
+                    }`}>
+                      <span>{idx + 1}</span>
+                    </div>
                   )}
                 </div>
-                <p className={`text-xs mt-0.5 leading-relaxed ${
-                  isActive
-                    ? isDark ? 'text-zinc-300' : 'text-slate-600'
-                    : isDark ? 'text-zinc-400' : 'text-slate-500'
-                }`}>
-                  {step.description}
-                </p>
+
+                {/* Step Content Info (Clean & Modern, No Enclosing Boxes) */}
+                <div className="flex-1 pt-0.5 min-w-0">
+                  <div className="flex items-center space-x-2.5 flex-wrap gap-y-1">
+                    <h4 className={`text-sm sm:text-base font-bold tracking-tight transition-colors ${
+                      isActive
+                        ? isDark ? 'text-[#d4f870]' : 'text-[#0a2e16]'
+                        : isDone
+                        ? isDark ? 'text-zinc-200' : 'text-slate-800'
+                        : isDark ? 'text-zinc-600' : 'text-slate-400'
+                    }`}>
+                      {step.title}
+                    </h4>
+
+                    {isActive && (
+                      <span className={`inline-flex items-center text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                        isDark
+                          ? 'bg-[#d4f870]/20 text-[#d4f870]'
+                          : 'bg-[#0a2e16]/10 text-[#0a2e16]'
+                      }`}>
+                        In Progress
+                      </span>
+                    )}
+
+                    {isDone && (
+                      <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                        Completed
+                      </span>
+                    )}
+                  </div>
+
+                  <p className={`text-xs sm:text-sm mt-1 transition-colors leading-relaxed ${
+                    isActive
+                      ? isDark ? 'text-zinc-300' : 'text-slate-600'
+                      : isDone
+                      ? isDark ? 'text-zinc-400' : 'text-slate-500'
+                      : isDark ? 'text-zinc-600' : 'text-slate-400'
+                  }`}>
+                    {step.description}
+                  </p>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

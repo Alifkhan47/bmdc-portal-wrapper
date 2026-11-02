@@ -207,8 +207,13 @@ export default function App() {
         )}
 
         {viewState === 'error' && (
-          <div className="space-y-8">
+          <div className="space-y-6">
             <ErrorBanner message={generalError} onRetry={handleReset} theme={theme} />
+            <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight ${
+              isDark ? 'text-[#f2fdf4]' : 'text-slate-900'
+            }`}>
+              Verify Your Doctor
+            </h1>
             <SearchForm
               onSearch={handleStartSearch}
               isLoading={false}
@@ -224,13 +229,20 @@ export default function App() {
         )}
 
         {viewState === 'idle' && (
-          <SearchForm
-            onSearch={handleStartSearch}
-            isLoading={false}
-            theme={theme}
-            doctorType={currentDoctorType}
-            onDoctorTypeChange={setCurrentDoctorType}
-          />
+          <div className="space-y-6">
+            <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight ${
+              isDark ? 'text-[#f2fdf4]' : 'text-slate-900'
+            }`}>
+              Verify Your Doctor
+            </h1>
+            <SearchForm
+              onSearch={handleStartSearch}
+              isLoading={false}
+              theme={theme}
+              doctorType={currentDoctorType}
+              onDoctorTypeChange={setCurrentDoctorType}
+            />
+          </div>
         )}
       </main>
 

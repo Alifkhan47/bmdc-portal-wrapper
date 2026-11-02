@@ -30,15 +30,14 @@ export default function SearchForm({ onSearch, isLoading, theme = 'dark', doctor
     <div className={`w-full border rounded-3xl p-6 sm:p-10 space-y-8 transition-colors ${
       isDark ? 'border-[#d4f870]/20 bg-[#0d2716] text-[#f2fdf4]' : 'border-slate-200 bg-white text-slate-900'
     }`}>
-      {/* Form Header & Category Toggle */}
+      {/* Category Toggle Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6 border-inherit">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-            Practitioner Verification
-          </h1>
-          <p className={`text-xs mt-1 font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
-            Enter BMDC registration number to verify credentials
-          </p>
+        <div className="flex items-center space-x-2">
+          <span className={`text-xs font-bold uppercase tracking-wider ${
+            isDark ? 'text-zinc-400' : 'text-slate-500'
+          }`}>
+            Practitioner Category
+          </span>
         </div>
 
         {/* Doctor Type Pill Selector */}
