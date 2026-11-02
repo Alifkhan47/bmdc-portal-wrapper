@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowUpRight, Sun, Moon } from 'lucide-react';
 
-export default function Header({ theme = 'dark', onToggleTheme, doctorType = 'MBBS' }) {
+export default function Header({ theme = 'dark', onToggleTheme, doctorType = 'MBBS', onHomeClick }) {
   const isDark = theme === 'dark';
 
   return (
@@ -9,9 +9,14 @@ export default function Header({ theme = 'dark', onToggleTheme, doctorType = 'MB
       isDark ? 'border-[#d4f870]/15 bg-[#07170c] text-[#f2fdf4]' : 'border-slate-200 bg-white text-[#0a2e16]'
     } px-4 sm:px-8 py-3.5`}>
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        {/* Brand Logo & Title */}
-        <div className="flex items-center space-x-3">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
+        {/* Brand Logo & Title (Clickable Home Action) */}
+        <button
+          type="button"
+          onClick={onHomeClick}
+          className="flex items-center space-x-3 text-left cursor-pointer group transition-opacity hover:opacity-85 focus:outline-none"
+          title="Return to search homepage"
+        >
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-transform group-hover:scale-105 ${
             isDark ? 'bg-[#d4f870] text-[#07170c]' : 'bg-[#0a2e16] text-[#d4f870]'
           }`}>
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg">
@@ -20,7 +25,7 @@ export default function Header({ theme = 'dark', onToggleTheme, doctorType = 'MB
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <span className="text-sm font-extrabold tracking-tight">BMDC Portal</span>
+              <span className="text-sm font-extrabold tracking-tight group-hover:underline">BMDC Portal</span>
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                 isDark ? 'bg-[#11381d] text-[#d4f870] border border-[#d4f870]/30' : 'bg-[#dcf78a] text-[#0a2e16] border border-[#0a2e16]/15'
               }`}>
@@ -31,7 +36,7 @@ export default function Header({ theme = 'dark', onToggleTheme, doctorType = 'MB
               Bangladesh Medical & Dental Council
             </p>
           </div>
-        </div>
+        </button>
 
         {/* Controls & Nav Links */}
         <div className="flex items-center space-x-4 self-end sm:self-center font-medium text-xs">

@@ -189,6 +189,7 @@ export default function App() {
         theme={theme}
         onToggleTheme={toggleTheme}
         doctorType={doctorData?.doctorType || currentDoctorType}
+        onHomeClick={handleReset}
       />
 
       {/* Main Container: Centered max-w-5xl */}
