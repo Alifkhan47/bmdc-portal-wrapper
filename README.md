@@ -24,19 +24,48 @@ A modern, high-performance web wrapper, practitioner verification gateway, and i
 
 ---
 
-## 🚀 Quick Start (Single Command)
+## 📥 Prerequisites (If You Don't Have `npm` / Node.js)
 
-To launch the full-stack portal locally:
+To run this project locally, you need **Node.js** (which comes bundled with `npm`):
 
-```bash
-npm start
-```
-*(Or in PowerShell if script execution is restricted: `node server/index.js` or double-click `start.bat`)*
+1. **Download & Install**:
+   - Visit [nodejs.org](https://nodejs.org/) and download the **LTS** version (recommended).
+   - Run the installer and follow the standard on-screen prompts.
+   - *(Windows terminal alternative: `winget install OpenJS.NodeJS.LTS`)*
 
-The application will be live at:
-👉 **`http://localhost:5000`**
+2. **Verify Installation**:
+   - Open Command Prompt, PowerShell, or Terminal and run:
+     ```bash
+     node -v
+     npm -v
+     ```
+   - If version numbers appear, you are ready to go!
 
-For development with hot module replacement (HMR):
+---
+
+## 🚀 Getting Started
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Alifkhan47/bmdc-portal-wrapper.git
+   cd bmdc-portal-wrapper
+   ```
+
+2. **Install project dependencies** (first time only):
+   ```bash
+   npm install
+   ```
+
+3. **Launch the portal**:
+   ```bash
+   npm start
+   ```
+   *(On Windows, you can also simply double-click `start.bat`)*
+
+4. The application will be live at:  
+   👉 **`http://localhost:5000`**
+
+For active development with hot-module reload (HMR):
 ```bash
 npm run dev
 ```
