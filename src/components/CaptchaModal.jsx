@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { RotateCw, ArrowRight } from 'lucide-react';
+import { RotateCw, ArrowRight, X } from 'lucide-react';
 
 export default function CaptchaModal({
   isOpen,
@@ -56,31 +56,36 @@ export default function CaptchaModal({
       }`}>
         {/* Header bar */}
         <div className="flex items-center justify-between border-b pb-4 mb-6 border-inherit">
-          <span className="text-xs font-bold tracking-wider uppercase text-slate-400">
+          <span className={`text-xs font-bold tracking-wider uppercase ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
             Security Verification
           </span>
           <button
             type="button"
             onClick={onClose}
             disabled={isVerifying}
-            className={`rounded-full px-3 py-1 text-xs font-bold border cursor-pointer ${
+            aria-label="Close"
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer border ${
               isDark
-                ? 'border-zinc-700 bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700'
-                : 'border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200'
+                ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white'
+                : 'border-slate-300 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
             }`}
           >
-            [CLOSE]
+            <X className="w-4 h-4 stroke-[2.5]" />
           </button>
         </div>
 
         {/* Target Info */}
-        <div className={`border rounded-2xl p-3 mb-6 font-mono text-xs flex items-center justify-between ${
+        <div className={`border rounded-2xl p-3.5 mb-6 font-mono text-xs flex items-center justify-between ${
           isDark
             ? 'border-[#d4f870]/20 bg-[#121c15]'
-            : 'border-slate-200 bg-slate-50'
+            : 'border-slate-200 bg-slate-100'
         }`}>
-          <span className="opacity-75 uppercase font-semibold">QUERY TARGET:</span>
-          <span className="font-bold uppercase tracking-wider text-emerald-500 dark:text-[#d4f870]">
+          <span className={`uppercase font-bold tracking-wider ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+            Query Target:
+          </span>
+          <span className={`font-mono font-extrabold uppercase tracking-wider text-sm ${
+            isDark ? 'text-[#d4f870]' : 'text-[#0a2e16]'
+          }`}>
             {doctorType} #{cleanRegNo}
           </span>
         </div>
@@ -98,8 +103,10 @@ export default function CaptchaModal({
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Captcha Image Display & Reload */}
           <div className="space-y-2">
-            <label className="block font-mono text-xs uppercase tracking-widest opacity-80 font-bold">
-              COUNCIL CAPTCHA CHALLENGE IMAGE
+            <label className={`block font-mono text-xs uppercase tracking-wider font-bold ${
+              isDark ? 'text-zinc-300' : 'text-slate-700'
+            }`}>
+              Council Captcha Challenge Image
             </label>
             <div className={`border rounded-2xl p-3 flex items-center justify-between bg-white ${
               isDark ? 'border-zinc-700' : 'border-slate-200'
@@ -136,8 +143,10 @@ export default function CaptchaModal({
 
           {/* Solution Input */}
           <div className="space-y-2">
-            <label className="block font-mono text-xs uppercase tracking-widest opacity-80 font-bold">
-              ENTER CAPTCHA CODE (6 CHARACTERS)
+            <label className={`block font-mono text-xs uppercase tracking-wider font-bold ${
+              isDark ? 'text-zinc-300' : 'text-slate-700'
+            }`}>
+              Enter Captcha Code (6 Characters)
             </label>
             <input
               ref={inputRef}
@@ -147,10 +156,10 @@ export default function CaptchaModal({
               placeholder="e.g. HMdgnW"
               maxLength={8}
               disabled={isVerifying}
-              className={`w-full border-b-2 py-3 text-3xl font-mono font-extrabold tracking-widest text-center bg-transparent transition-colors focus:outline-none placeholder:opacity-20 ${
+              className={`w-full border-b-2 py-3 text-3xl font-mono font-extrabold tracking-widest text-center bg-transparent transition-colors focus:outline-none ${
                 isDark
-                  ? 'border-zinc-700 text-[#f2fdf4] focus:border-[#d4f870]'
-                  : 'border-slate-300 text-slate-900 focus:border-[#0a2e16]'
+                  ? 'border-zinc-700 text-[#f2fdf4] placeholder:text-zinc-700 focus:border-[#d4f870]'
+                  : 'border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#0a2e16]'
               }`}
             />
           </div>
