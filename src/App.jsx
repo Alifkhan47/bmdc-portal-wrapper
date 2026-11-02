@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import SearchForm from './components/SearchForm';
 import CaptchaModal from './components/CaptchaModal';
-import LoadingSkeleton from './components/LoadingSkeleton';
+import LoadingSteps from './components/LoadingSteps';
 import DoctorDossier from './components/DoctorDossier';
 import ErrorBanner from './components/ErrorBanner';
 
@@ -13,6 +13,7 @@ export default function App() {
     return 'light';
   });
   const [currentDoctorType, setCurrentDoctorType] = useState('MBBS');
+  const [activeRegNo, setActiveRegNo] = useState('');
   const [viewState, setViewState] = useState('idle'); // 'idle' | 'initializing' | 'verifying' | 'result' | 'error'
   const [sessionData, setSessionData] = useState(null);
   const [isCaptchaOpen, setIsCaptchaOpen] = useState(false);
@@ -41,6 +42,7 @@ export default function App() {
 
   // Step 1: Initialize Headless Session & Intercept CAPTCHA
   const handleStartSearch = async (cleanRegNo, doctorType) => {
+    setActiveRegNo(cleanRegNo);
     setCurrentDoctorType(doctorType);
     setViewState('initializing');
     setGeneralError('');
@@ -173,6 +175,7 @@ export default function App() {
       fetch(`/api/session/${sessionData.sessionId}`, { method: 'DELETE' }).catch(() => {});
     }
     setSessionData(null);
+    setActiveRegNo('');
     setDoctorData(null);
     setGeneralError('');
     setCaptchaError('');
@@ -195,15 +198,12 @@ export default function App() {
       <main className="max-w-5xl mx-auto w-full px-4 sm:px-8 py-6 sm:py-10 flex-1 space-y-8">
         {/* Dynamic State Views */}
         {(viewState === 'initializing' || viewState === 'verifying') && (
-          <div className="space-y-4">
-            <div className={`flex items-center space-x-2 font-mono text-xs font-bold uppercase tracking-wider ${
-              isDark ? 'text-zinc-400' : 'text-slate-500'
-            }`}>
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block animate-ping"></span>
-              <span>{viewState === 'initializing' ? 'CONNECTING TO BMDC REGISTRY...' : 'SYNTHESIZING VERIFIED DOSSIER...'}</span>
-            </div>
-            <LoadingSkeleton theme={theme} />
-          </div>
+          <LoadingSteps
+            viewState={viewState}
+            theme={theme}
+            regNo={activeRegNo || sessionData?.cleanRegNo}
+            doctorType={sessionData?.doctorType || currentDoctorType}
+          />
         )}
 
         {viewState === 'error' && (
