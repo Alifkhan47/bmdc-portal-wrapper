@@ -56,8 +56,8 @@ export default function CaptchaModal({
       }`}>
         {/* Header bar */}
         <div className="flex items-center justify-between border-b pb-4 mb-6 border-inherit">
-          <span className="font-mono text-xs font-bold tracking-widest uppercase text-slate-400">
-            02 // SECURITY CHALLENGE
+          <span className="text-xs font-bold tracking-wider uppercase text-slate-400">
+            Security Verification
           </span>
           <button
             type="button"

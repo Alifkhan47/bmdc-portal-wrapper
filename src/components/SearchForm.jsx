@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Search, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export default function SearchForm({ onSearch, isLoading, theme = 'dark', doctorType = 'MBBS', onDoctorTypeChange }) {
   const [rawInput, setRawInput] = useState('');
@@ -30,19 +30,19 @@ export default function SearchForm({ onSearch, isLoading, theme = 'dark', doctor
     <div className={`w-full border rounded-3xl p-6 sm:p-10 space-y-8 transition-colors ${
       isDark ? 'border-[#d4f870]/20 bg-[#0d2716] text-[#f2fdf4]' : 'border-slate-200 bg-white text-slate-900'
     }`}>
-      {/* Category Toggle & Step Badge */}
+      {/* Form Header & Category Toggle */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6 border-inherit">
-        <div className="flex items-center space-x-2">
-          <span className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-bold border ${
-            isDark ? 'bg-[#11381d] text-[#d4f870] border-[#d4f870]/30' : 'bg-[#dcf78a] text-[#0a2e16] border-[#0a2e16]/15'
-          }`}>
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>01 // LOOKUP QUERY</span>
-          </span>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+            Practitioner Verification
+          </h1>
+          <p className={`text-xs mt-1 font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
+            Enter BMDC registration number to verify credentials
+          </p>
         </div>
 
         {/* Doctor Type Pill Selector */}
-        <div className={`inline-flex rounded-full p-1 border ${
+        <div className={`inline-flex rounded-full p-1 border self-start sm:self-center shrink-0 ${
           isDark ? 'bg-[#07170c] border-[#d4f870]/20' : 'bg-slate-100 border-slate-200'
         }`}>
           <button

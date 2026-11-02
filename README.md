@@ -16,11 +16,11 @@ A modern, high-performance web wrapper, practitioner verification gateway, and i
    - Seamlessly accepts both prefixed (e.g. `A-33919`, `B-1234`) and raw numeric inputs, sanitizing them automatically to prevent legacy BMDC portal query faults.
    - One-click category toggle for **MBBS Doctor** and **BDS Dental Surgeon**.
 
-3. **Swiss Editorial UI / Meska Grid Aesthetic**:
-   - **Zero Shadows**: Crisp, flat architecture with strictly zero muddy drop-shadows or blur elevations.
-   - **Accessible Data Hierarchy**: Large, high-contrast typography, pill badges, and structured 2-column registry ledgers.
+3. **Clean, Focused Modern UI**:
+   - **Zero Clutter**: Clean layout putting registration lookup right at the center without distracting banners.
+   - **Accessible Data Hierarchy**: High-contrast typography, structured practitioner dossier, and responsive design.
    - **Official Artifacts**: Extracts and displays archived student portraits, current registry profile portraits, recognized medical specialities table, and official QR authentication seal.
-   - **Theme Support**: Default dark mode with an eye-friendly, soothing light mode.
+   - **Theme Support**: Default light mode with quick toggle for dark mode.
 
 ---
 

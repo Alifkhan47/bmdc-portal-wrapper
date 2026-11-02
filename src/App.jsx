@@ -5,7 +5,6 @@ import CaptchaModal from './components/CaptchaModal';
 import LoadingSkeleton from './components/LoadingSkeleton';
 import DoctorDossier from './components/DoctorDossier';
 import ErrorBanner from './components/ErrorBanner';
-import { ArrowRight, Sparkles } from 'lucide-react';
 
 export default function App() {
   const [theme, setTheme] = useState(() => {
@@ -193,49 +192,7 @@ export default function App() {
       />
 
       {/* Main Container: Centered max-w-5xl */}
-      <main className="max-w-5xl mx-auto w-full px-4 sm:px-8 py-8 sm:py-12 flex-1 space-y-10">
-        {/* Hero Section on Idle (Soothing Swiss Layout) */}
-        {viewState === 'idle' && !doctorData && (
-          <div className="space-y-6">
-            {/* Pill Badge */}
-            <div>
-              <span className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold border ${
-                isDark
-                  ? 'border-[#d4f870]/30 bg-[#11381d] text-[#d4f870]'
-                  : 'border-[#0a2e16]/15 bg-[#dcf78a] text-[#0a2e16]'
-              }`}>
-                <span className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase ${
-                  isDark ? 'bg-[#d4f870] text-[#07170c]' : 'bg-[#0a2e16] text-[#d4f870]'
-                }`}>
-                  Official
-                </span>
-                <span>Council Verified Healthcare Directory</span>
-                <ArrowRight className="w-3 h-3" />
-              </span>
-            </div>
-
-            {/* Massive Hero Headline */}
-            <h1 className={`text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] max-w-3xl ${
-              isDark ? 'text-[#f2fdf4]' : 'text-slate-900'
-            }`}>
-              Verify Medical & Dental Practitioner Registry
-            </h1>
-
-            {/* Swiss Bullet & Sub-text */}
-            <div className="flex items-start space-x-3 pt-1 max-w-2xl">
-              <div className="flex space-x-1.5 pt-1.5 shrink-0">
-                <span className={`w-2.5 h-2.5 rounded-full ${isDark ? 'bg-[#d4f870]' : 'bg-[#0a2e16]'}`}></span>
-                <span className={`w-2.5 h-2.5 rounded-full opacity-30 ${isDark ? 'bg-[#d4f870]' : 'bg-[#0a2e16]'}`}></span>
-              </div>
-              <p className={`text-sm sm:text-base font-medium leading-relaxed ${
-                isDark ? 'text-zinc-300' : 'text-slate-600'
-              }`}>
-                Instant, secure credential verification for registered MBBS Doctors and BDS Dental Surgeons under the Bangladesh Medical & Dental Council.
-              </p>
-            </div>
-          </div>
-        )}
-
+      <main className="max-w-5xl mx-auto w-full px-4 sm:px-8 py-6 sm:py-10 flex-1 space-y-8">
         {/* Dynamic State Views */}
         {(viewState === 'initializing' || viewState === 'verifying') && (
           <div className="space-y-4">
@@ -267,15 +224,13 @@ export default function App() {
         )}
 
         {viewState === 'idle' && (
-          <div className="space-y-8">
-            <SearchForm
-              onSearch={handleStartSearch}
-              isLoading={false}
-              theme={theme}
-              doctorType={currentDoctorType}
-              onDoctorTypeChange={setCurrentDoctorType}
-            />
-          </div>
+          <SearchForm
+            onSearch={handleStartSearch}
+            isLoading={false}
+            theme={theme}
+            doctorType={currentDoctorType}
+            onDoctorTypeChange={setCurrentDoctorType}
+          />
         )}
       </main>
 
@@ -296,15 +251,15 @@ export default function App() {
       />
 
       {/* Footer */}
-      <footer className={`border-t py-6 px-4 sm:px-8 font-mono text-xs transition-colors ${
+      <footer className={`border-t py-6 px-4 sm:px-8 text-xs transition-colors ${
         isDark ? 'border-[#d4f870]/15 bg-[#07170c] text-zinc-400' : 'border-slate-200 bg-white text-slate-500'
       }`}>
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <span className="font-bold uppercase tracking-wider">
-            BM&DC // BANGLADESH MEDICAL & DENTAL COUNCIL GATEWAY
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          <span className="font-semibold tracking-wide">
+            Bangladesh Medical & Dental Council (BMDC) Verification Gateway
           </span>
-          <span className="text-[11px] opacity-80">
-            SWISS GRID SYSTEM // DESIGNED AFTER MESKA
+          <span className="text-[11px] opacity-75">
+            Official Public Registry Portal
           </span>
         </div>
       </footer>
