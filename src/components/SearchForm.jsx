@@ -41,18 +41,9 @@ export default function SearchForm({ onSearch, isLoading, theme = 'dark', doctor
     <div className={`w-full border rounded-3xl p-6 sm:p-10 space-y-8 transition-colors ${
       isDark ? 'border-[#d4f870]/20 bg-[#0d2716] text-[#f2fdf4]' : 'border-slate-200 bg-white text-slate-900'
     }`}>
-      {/* Category Toggle Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6 border-inherit">
-        <div className="flex items-center space-x-2">
-          <span className={`text-xs font-bold uppercase tracking-wider ${
-            isDark ? 'text-zinc-400' : 'text-slate-500'
-          }`}>
-            Practitioner Category
-          </span>
-        </div>
-
-        {/* Doctor Type Pill Selector */}
-        <div className={`inline-flex rounded-full p-1 border self-start sm:self-center shrink-0 ${
+      {/* Category Toggle Bar (Left-aligned) */}
+      <div className="flex items-center justify-start border-b pb-6 border-inherit">
+        <div className={`inline-flex rounded-full p-1 border ${
           isDark ? 'bg-[#07170c] border-[#d4f870]/20' : 'bg-slate-100 border-slate-200'
         }`}>
           <button
@@ -149,8 +140,8 @@ export default function SearchForm({ onSearch, isLoading, theme = 'dark', doctor
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-wrap items-center gap-4 pt-2">
+        {/* Action Button */}
+        <div className="pt-2">
           <button
             type="submit"
             disabled={!cleanNumber || isLoading}
@@ -162,18 +153,6 @@ export default function SearchForm({ onSearch, isLoading, theme = 'dark', doctor
           >
             <span>{isLoading ? 'Querying Council Registry...' : 'Start Verification'}</span>
             <ArrowRight className="w-4 h-4" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleQuickSample('A-33919', 'MBBS')}
-            className={`rounded-full px-6 py-4 font-bold text-sm transition-colors border cursor-pointer ${
-              isDark
-                ? 'border-[#d4f870]/30 bg-[#11381d] text-[#d4f870] hover:bg-[#184e29]'
-                : 'border-slate-300 bg-slate-100 text-slate-800 hover:bg-slate-200'
-            }`}
-          >
-            Explore Sample Record
           </button>
         </div>
       </form>
