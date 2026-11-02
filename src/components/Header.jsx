@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowUpRight, Sun, Moon } from 'lucide-react';
+import BmdcLogo from './BmdcLogo';
 
 export default function Header({ theme = 'dark', onToggleTheme, doctorType = 'MBBS', onHomeClick }) {
   const isDark = theme === 'dark';
@@ -16,13 +17,7 @@ export default function Header({ theme = 'dark', onToggleTheme, doctorType = 'MB
           className="flex items-center space-x-3 text-left cursor-pointer group transition-opacity hover:opacity-85 focus:outline-none"
           title="Return to search homepage"
         >
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-transform group-hover:scale-105 ${
-            isDark ? 'bg-[#d4f870] text-[#07170c]' : 'bg-[#0a2e16] text-[#d4f870]'
-          }`}>
-            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
-            </svg>
-          </div>
+          <BmdcLogo theme={theme} className="w-9 h-9" />
           <div>
             <div className="flex items-center space-x-2">
               <span className="text-sm font-extrabold tracking-tight group-hover:underline">BMDC Portal</span>
