@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
+
+const normalizeType = (type) => (String(type || '').toUpperCase().includes('BDS') ? 'BDS' : 'MBBS');
 
 export default function SearchForm({ onSearch, isLoading, theme = 'dark', doctorType = 'MBBS', onDoctorTypeChange }) {
   const [rawInput, setRawInput] = useState('');
-  const [selectedType, setSelectedType] = useState(doctorType || 'MBBS');
+  const [selectedType, setSelectedType] = useState(() => normalizeType(doctorType));
   const isDark = theme === 'dark';
 
+  // Ensure state stays synced and defaults to MBBS
+  useEffect(() => {
+    setSelectedType(normalizeType(doctorType));
+  }, [doctorType]);
+
   const handleTypeChange = (type) => {
-    setSelectedType(type);
-    if (onDoctorTypeChange) onDoctorTypeChange(type);
+    const normalized = normalizeType(type);
+    setSelectedType(normalized);
+    if (onDoctorTypeChange) onDoctorTypeChange(normalized);
   };
+
+  const isBds = normalizeType(selectedType) === 'BDS';
+  const isMbbs = !isBds; // Guaranteed auto-selected MBBS default
 
   // Silently sanitized registration number (digits only)
   const cleanNumber = rawInput.replace(/[^0-9]/g, '');
@@ -18,7 +29,7 @@ export default function SearchForm({ onSearch, isLoading, theme = 'dark', doctor
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!cleanNumber) return;
-    onSearch(cleanNumber, selectedType);
+    onSearch(cleanNumber, isBds ? 'BDS' : 'MBBS');
   };
 
   const handleQuickSample = (reg, type = 'MBBS') => {
@@ -48,7 +59,7 @@ export default function SearchForm({ onSearch, isLoading, theme = 'dark', doctor
             type="button"
             onClick={() => handleTypeChange('MBBS')}
             className={`rounded-full px-5 py-2 text-xs font-extrabold tracking-wide transition-colors cursor-pointer ${
-              selectedType === 'MBBS'
+              isMbbs
                 ? isDark
                   ? 'bg-[#d4f870] text-[#07170c]'
                   : 'bg-[#0a2e16] text-[#d4f870]'
@@ -63,7 +74,7 @@ export default function SearchForm({ onSearch, isLoading, theme = 'dark', doctor
             type="button"
             onClick={() => handleTypeChange('BDS')}
             className={`rounded-full px-5 py-2 text-xs font-extrabold tracking-wide transition-colors cursor-pointer ${
-              selectedType === 'BDS'
+              isBds
                 ? isDark
                   ? 'bg-[#d4f870] text-[#07170c]'
                   : 'bg-[#0a2e16] text-[#d4f870]'

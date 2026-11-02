@@ -177,6 +177,7 @@ export default function App() {
     setSessionData(null);
     setActiveRegNo('');
     setDoctorData(null);
+    setCurrentDoctorType('MBBS');
     setGeneralError('');
     setCaptchaError('');
     setViewState('idle');

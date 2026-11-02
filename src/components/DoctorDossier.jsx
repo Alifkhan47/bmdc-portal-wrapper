@@ -10,6 +10,28 @@ import {
   ShieldCheck
 } from 'lucide-react';
 
+const formatValue = (val) => {
+  if (!val) return 'N/A';
+  const trimmed = String(val).trim();
+  const lower = trimmed.toLowerCase();
+  if (
+    lower === 'not recorded' ||
+    lower === 'not disclosed' ||
+    lower === 'not available' ||
+    lower === 'not issued' ||
+    lower === 'unavailable' ||
+    lower === '-' ||
+    lower === '--' ||
+    lower === 'null' ||
+    lower === 'undefined'
+  ) {
+    return 'N/A';
+  }
+  return trimmed;
+};
+
+const isNA = (val) => formatValue(val) === 'N/A';
+
 export default function DoctorDossier({ doctor, onReset, theme = 'dark' }) {
   const [copiedReg, setCopiedReg] = useState(false);
   const [copiedJson, setCopiedJson] = useState(false);
@@ -222,7 +244,7 @@ export default function DoctorDossier({ doctor, onReset, theme = 'dark' }) {
                 REGISTRATION YEAR
               </span>
               <span className="text-3xl sm:text-4xl font-extrabold font-mono block">
-                {doctor.regYear || 'N/A'}
+                {formatValue(doctor.regYear)}
               </span>
             </div>
 
@@ -233,7 +255,7 @@ export default function DoctorDossier({ doctor, onReset, theme = 'dark' }) {
                 REGISTRATION VALID TILL
               </span>
               <span className="text-3xl sm:text-4xl font-extrabold font-mono block">
-                {doctor.regValidity || 'Permanent / N/A'}
+                {formatValue(doctor.regValidity)}
               </span>
             </div>
 
@@ -243,8 +265,10 @@ export default function DoctorDossier({ doctor, onReset, theme = 'dark' }) {
               }`}>
                 PORTABLE SMART CARD STATUS
               </span>
-              <span className="text-2xl sm:text-3xl font-extrabold font-mono block">
-                {doctor.portableCardNo || 'Not Issued'}
+              <span className={`text-2xl sm:text-3xl font-extrabold font-mono block ${
+                isNA(doctor.portableCardNo) ? (isDark ? 'text-zinc-500' : 'text-slate-400') : ''
+              }`}>
+                {formatValue(doctor.portableCardNo)}
               </span>
             </div>
           </div>
@@ -258,8 +282,12 @@ export default function DoctorDossier({ doctor, onReset, theme = 'dark' }) {
                 }`}>
                   BLOOD GROUP
                 </span>
-                <span className="text-2xl sm:text-3xl font-extrabold font-mono block text-rose-600 dark:text-rose-400 whitespace-nowrap">
-                  {doctor.bloodGroup || 'Not Recorded'}
+                <span className={`text-2xl sm:text-3xl font-extrabold font-mono block whitespace-nowrap ${
+                  !isNA(doctor.bloodGroup)
+                    ? 'text-rose-600 dark:text-rose-400'
+                    : isDark ? 'text-zinc-500' : 'text-slate-400'
+                }`}>
+                  {formatValue(doctor.bloodGroup)}
                 </span>
               </div>
 
@@ -269,8 +297,10 @@ export default function DoctorDossier({ doctor, onReset, theme = 'dark' }) {
                 }`}>
                   DATE OF BIRTH
                 </span>
-                <span className="text-xl sm:text-2xl font-extrabold font-mono block whitespace-nowrap">
-                  {doctor.dob || 'Not Disclosed'}
+                <span className={`text-xl sm:text-2xl font-extrabold font-mono block whitespace-nowrap ${
+                  isNA(doctor.dob) ? (isDark ? 'text-zinc-500' : 'text-slate-400') : ''
+                }`}>
+                  {formatValue(doctor.dob)}
                 </span>
               </div>
             </div>
@@ -281,8 +311,10 @@ export default function DoctorDossier({ doctor, onReset, theme = 'dark' }) {
               }`}>
                 FATHER'S NAME
               </span>
-              <span className="text-xl sm:text-2xl font-bold uppercase block">
-                {doctor.fatherName || 'Not Disclosed'}
+              <span className={`text-xl sm:text-2xl font-bold uppercase block ${
+                isNA(doctor.fatherName) ? (isDark ? 'text-zinc-500' : 'text-slate-400 font-normal') : ''
+              }`}>
+                {formatValue(doctor.fatherName)}
               </span>
             </div>
 
@@ -292,8 +324,10 @@ export default function DoctorDossier({ doctor, onReset, theme = 'dark' }) {
               }`}>
                 MOTHER'S NAME
               </span>
-              <span className="text-xl sm:text-2xl font-bold uppercase block">
-                {doctor.motherName || 'Not Disclosed'}
+              <span className={`text-xl sm:text-2xl font-bold uppercase block ${
+                isNA(doctor.motherName) ? (isDark ? 'text-zinc-500' : 'text-slate-400 font-normal') : ''
+              }`}>
+                {formatValue(doctor.motherName)}
               </span>
             </div>
           </div>
