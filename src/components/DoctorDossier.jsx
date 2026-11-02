@@ -251,14 +251,14 @@ export default function DoctorDossier({ doctor, onReset, theme = 'dark' }) {
 
           {/* Column B: Biographical Particulars */}
           <div className="space-y-6 pt-6 md:pt-0 md:pl-8">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-[auto_1fr] sm:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <span className={`font-mono text-xs uppercase tracking-widest font-bold block ${
                   isDark ? 'text-zinc-400' : 'text-slate-500'
                 }`}>
                   BLOOD GROUP
                 </span>
-                <span className="text-3xl sm:text-4xl font-extrabold font-mono block text-rose-600 dark:text-rose-400">
+                <span className="text-2xl sm:text-3xl font-extrabold font-mono block text-rose-600 dark:text-rose-400 whitespace-nowrap">
                   {doctor.bloodGroup || 'Not Recorded'}
                 </span>
               </div>
@@ -269,7 +269,7 @@ export default function DoctorDossier({ doctor, onReset, theme = 'dark' }) {
                 }`}>
                   DATE OF BIRTH
                 </span>
-                <span className="text-3xl sm:text-4xl font-extrabold font-mono block">
+                <span className="text-xl sm:text-2xl font-extrabold font-mono block whitespace-nowrap">
                   {doctor.dob || 'Not Disclosed'}
                 </span>
               </div>
