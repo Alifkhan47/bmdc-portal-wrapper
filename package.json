@@ -1,0 +1,37 @@
+{
+  "name": "bmdc-portal-wrapper",
+  "version": "1.0.0",
+  "description": "Bangladesh Medical & Dental Council (BMDC) Portal Wrapper - Modern registry verification gateway & interactive CAPTCHA relay",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "server": "node server/index.js",
+    "client": "vite",
+    "build": "vite build",
+    "dev": "concurrently \"node server/index.js\" \"vite\""
+  },
+  "keywords": [
+    "bmdc",
+    "doctor-verification",
+    "bangladesh",
+    "captcha-relay",
+    "puppeteer"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "cheerio": "^1.2.0",
+    "concurrently": "^10.0.5",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "lucide-react": "^1.46.0",
+    "puppeteer-real-browser": "^1.4.4",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.0"
+  }
+}

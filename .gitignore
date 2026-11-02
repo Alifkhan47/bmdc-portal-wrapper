@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+.env.local
+.DS_Store
+Thumbs.db
+server/last-result.html
+server/last-result.txt
+*.log
