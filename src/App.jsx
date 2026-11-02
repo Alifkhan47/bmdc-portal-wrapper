@@ -210,10 +210,10 @@ export default function App() {
         {viewState === 'error' && (
           <div className="space-y-6">
             <ErrorBanner message={generalError} onRetry={handleReset} theme={theme} />
-            <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight ${
+            <h1 className={`text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] max-w-3xl ${
               isDark ? 'text-[#f2fdf4]' : 'text-slate-900'
             }`}>
-              Verify Your Doctor
+              Verify Medical & Dental Practitioner Registry
             </h1>
             <SearchForm
               onSearch={handleStartSearch}
@@ -231,10 +231,10 @@ export default function App() {
 
         {viewState === 'idle' && (
           <div className="space-y-6">
-            <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight ${
+            <h1 className={`text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] max-w-3xl ${
               isDark ? 'text-[#f2fdf4]' : 'text-slate-900'
             }`}>
-              Verify Your Doctor
+              Verify Medical & Dental Practitioner Registry
             </h1>
             <SearchForm
               onSearch={handleStartSearch}
