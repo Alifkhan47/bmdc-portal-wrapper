@@ -1,38 +1,37 @@
 import React from 'react';
-import { AlertTriangle, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 
-export default function ErrorBanner({ message, onRetry, theme = 'dark' }) {
-  const isDark = theme === 'dark';
-
+export default function ErrorBanner({ message, onRetry }) {
   return (
-    <div className={`w-full border rounded-3xl p-6 sm:p-8 space-y-6 transition-colors ${
-      isDark ? 'border-red-500/40 bg-red-950/20 text-red-100' : 'border-red-600/30 bg-red-50 text-red-950'
-    }`}>
-      <div className="flex items-center justify-between border-b pb-3 font-mono text-xs border-inherit">
-        <div className="flex items-center space-x-2 font-bold uppercase tracking-widest text-red-600 dark:text-red-400">
-          <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" />
-          <span>NOTICE // QUERY EXECUTION UNSUCCESSFUL</span>
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 py-4">
+      <div className="bg-error-container p-6 sm:p-8 rounded-xl border border-error/20 text-on-error-container space-y-4 shadow-xs">
+        <div className="flex items-center justify-between border-b border-error/20 pb-3 font-label-code text-xs">
+          <div className="flex items-center space-x-2 font-bold uppercase tracking-widest text-error">
+            <span className="w-2 h-2 rounded-full bg-error inline-block"></span>
+            <span>NOTICE // QUERY EXECUTION UNSUCCESSFUL</span>
+          </div>
+          <span className="font-bold opacity-80 font-label-code">STATUS: REJECTED</span>
         </div>
-        <span className="font-bold opacity-70 font-mono">STATUS: FAILED</span>
-      </div>
 
-      <div className="space-y-2">
-        <h4 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
-          No Matching Records Retrieved
-        </h4>
-        <p className={`text-sm font-mono leading-relaxed ${isDark ? 'text-red-200/80' : 'text-red-900'}`}>
-          {message || 'An error occurred or no matching registered practitioner was found on the official council registry.'}
-        </p>
-      </div>
+        <div className="space-y-1">
+          <h3 className="font-headline-md font-serif text-error tracking-tight">
+            Record Verification Halted
+          </h3>
+          <p className="font-body-md text-on-error-container/90 leading-relaxed">
+            {message || 'The Council verification portal did not find a matching active practitioner with the provided registration number or security token.'}
+          </p>
+        </div>
 
-      <div className="pt-2 font-mono text-xs">
-        <button
-          onClick={onRetry}
-          className="rounded-full px-6 py-3 font-bold uppercase tracking-wider transition-colors cursor-pointer inline-flex items-center space-x-2 bg-red-600 text-white hover:bg-red-700"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Retry Verification</span>
-        </button>
+        <div className="pt-2">
+          <button
+            type="button"
+            onClick={onRetry}
+            className="rounded-xs px-6 py-3 font-label-caps uppercase tracking-widest transition-colors cursor-pointer inline-flex items-center space-x-2 bg-error text-white hover:bg-error/90"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Retry Verification</span>
+          </button>
+        </div>
       </div>
     </div>
   );

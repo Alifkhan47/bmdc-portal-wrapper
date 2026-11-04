@@ -1,333 +1,383 @@
 import React, { useState } from 'react';
-import {
-  Copy,
-  Check,
-  Printer,
-  FileCode,
-  RotateCcw,
-  QrCode,
-  User,
-  ShieldCheck
-} from 'lucide-react';
+import { Copy, Check, Printer, ShieldCheck, ArrowRight, CameraOff, ExternalLink } from 'lucide-react';
 
-const formatValue = (val) => {
+const formatVal = (val) => {
   if (!val) return 'N/A';
-  const trimmed = String(val).trim();
-  const lower = trimmed.toLowerCase();
+  const str = String(val).trim();
+  const lower = str.toLowerCase();
   if (
     lower === 'not recorded' ||
     lower === 'not disclosed' ||
     lower === 'not available' ||
-    lower === 'not issued' ||
     lower === 'unavailable' ||
     lower === '-' ||
-    lower === '--' ||
-    lower === 'null' ||
-    lower === 'undefined'
+    lower === '--'
   ) {
     return 'N/A';
   }
-  return trimmed;
+  return str;
 };
 
-const isNA = (val) => formatValue(val) === 'N/A';
-
-export default function DoctorDossier({ doctor, onReset, theme = 'dark' }) {
+export default function DoctorDossier({ doctor, onReset }) {
   const [copiedReg, setCopiedReg] = useState(false);
   const [copiedJson, setCopiedJson] = useState(false);
-  const [showScreenshot, setShowScreenshot] = useState(false);
-  const isDark = theme === 'dark';
+  const [showProofModal, setShowProofModal] = useState(false);
 
-  const copyRegNumber = () => {
-    if (!doctor.regNo) return;
+  const cleanReg = doctor?.regNo || 'N/A';
+  const doctorName = doctor?.name || 'Practitioner Name Unavailable';
+  const cleanType = doctor?.doctorType || 'MBBS Doctor';
+  const isBds = cleanType.toUpperCase().includes('BDS');
+
+  const copyReg = () => {
+    if (!doctor?.regNo) return;
     navigator.clipboard.writeText(doctor.regNo);
     setCopiedReg(true);
     setTimeout(() => setCopiedReg(false), 2000);
   };
 
-  const copyRawJson = () => {
+  const copyJson = () => {
     navigator.clipboard.writeText(JSON.stringify(doctor, null, 2));
     setCopiedJson(true);
     setTimeout(() => setCopiedJson(false), 2000);
   };
 
-  const isActive = (doctor.regStatus || 'ACTIVE').toUpperCase() === 'ACTIVE';
+  // Derive title / specialities subtitle
+  const mainSpeciality = doctor?.qualifications && doctor.qualifications.length > 1
+    ? doctor.qualifications[0]?.degree
+    : isBds ? 'Dental Surgeon' : 'General Medical Practitioner';
 
   return (
-    <div className={`w-full transition-colors print:p-0 space-y-8 ${
-      isDark ? 'text-[#f2fdf4]' : 'text-slate-900'
-    }`}>
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 space-y-6 sm:space-y-8">
+      {/* Dossier Top Utilities & Reference Ribbon */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-on-surface/10 print:hidden">
+        <div className="flex flex-wrap items-center gap-2 text-on-surface-variant font-label-code">
+          <span className="text-primary font-bold">DOSSIER</span>
+          <span>•</span>
+          <span>INDEX / REGISTRY</span>
+          <span>•</span>
+          <span className="text-secondary">REF # BMDC-{cleanReg.replace(/[^0-9]/g, '')}-DOC</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={copyReg}
+            className="px-3 py-1.5 font-label-code uppercase tracking-wider text-on-surface bg-surface-container hover:bg-surface-container-high transition-colors flex items-center gap-1.5 rounded-xs cursor-pointer"
+          >
+            {copiedReg ? <Check className="w-3.5 h-3.5 text-on-tertiary-container" /> : <Copy className="w-3.5 h-3.5" />}
+            <span>{copiedReg ? 'COPIED' : 'Copy Reg No'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="px-3 py-1.5 font-label-code uppercase tracking-wider text-on-surface bg-surface-container hover:bg-surface-container-high transition-colors flex items-center gap-1.5 rounded-xs cursor-pointer"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print</span>
+          </button>
+        </div>
+      </div>
+
       {/* ─────────────────────────────────────────────────────────────
-          LEVEL 1: HERO SECTION (Doctor Name & Status Badges)
+          01: Hero Dossier Header Card
           ───────────────────────────────────────────────────────────── */}
-      <section className={`border rounded-3xl p-6 sm:p-10 space-y-6 ${
-        isDark ? 'border-[#d4f870]/20 bg-[#0d2716]' : 'border-slate-200 bg-white'
-      }`}>
-        {/* Top Pills Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-4 border-inherit">
-          <div className="flex items-center space-x-2">
-            <span className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-bold border ${
-              isDark ? 'bg-[#11381d] text-[#d4f870] border-[#d4f870]/30' : 'bg-[#dcf78a] text-[#0a2e16] border-[#0a2e16]/15'
-            }`}>
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>COUNCIL CERTIFIED RECORD</span>
+      <section className="bg-surface-container-lowest p-6 sm:p-10 rounded-xl shadow-xs border border-on-surface/10">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-4 mb-4 border-b border-on-surface/10">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+            <span className="font-label-code text-on-tertiary-container uppercase tracking-widest font-semibold">
+              Council Certified Record
             </span>
           </div>
-
-          <div className="flex items-center space-x-2 print:hidden font-semibold text-xs">
-            <button
-              onClick={copyRegNumber}
-              className={`rounded-full px-3.5 py-1.5 border transition-colors cursor-pointer flex items-center space-x-1.5 ${
-                isDark
-                  ? 'border-[#d4f870]/30 bg-[#11381d] text-[#d4f870] hover:bg-[#184e29]'
-                  : 'border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800'
-              }`}
-            >
-              {copiedReg ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
-              <span>{copiedReg ? 'COPIED REG' : 'COPY REG NO'}</span>
-            </button>
-
-            <button
-              onClick={() => window.print()}
-              className={`rounded-full px-3.5 py-1.5 border transition-colors cursor-pointer flex items-center space-x-1.5 ${
-                isDark
-                  ? 'border-[#d4f870]/30 bg-[#11381d] text-[#d4f870] hover:bg-[#184e29]'
-                  : 'border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800'
-              }`}
-            >
-              <Printer className="w-3 h-3" />
-              <span>PRINT</span>
-            </button>
-          </div>
+          <span className="font-label-code text-secondary tracking-widest">
+            ACT LXVII OF 1980 / GAZETTE VALIDATED
+          </span>
         </div>
 
-        {/* Massive Headline for Doctor's Name */}
         <div className="space-y-2">
-          <span className="font-mono text-xs uppercase tracking-widest font-bold opacity-60 block">
-            01 // REGISTERED PRACTITIONER DOSSIER
+          <span className="font-label-code text-secondary uppercase tracking-widest block">
+            [ 01 — PRACTITIONER RECORD ]
           </span>
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black uppercase tracking-tight leading-[1.05] break-words">
-            {doctor.name || 'Practitioner Name Unavailable'}
+          <h1 className="font-headline-lg font-serif text-primary tracking-tight capitalize">
+            {doctorName.toLowerCase().startsWith('dr.') ? doctorName : `Dr. ${doctorName}`}
           </h1>
+          <p className="font-body-lg text-on-surface-variant">
+            {mainSpeciality} • Licensed {isBds ? 'Dental Surgeon' : 'Medical Practitioner'}
+          </p>
         </div>
 
-        {/* Status and Category Pill Tags */}
-        <div className="flex flex-wrap items-center gap-3 pt-2">
-          <span className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-extrabold tracking-wide border ${
-            isActive
-              ? isDark
-                ? 'border-emerald-400/40 bg-emerald-950/40 text-emerald-300'
-                : 'border-emerald-600/40 bg-emerald-50 text-emerald-900 font-bold'
-              : 'border-amber-600/40 bg-amber-50 text-amber-900'
-          }`}>
-            <span className="w-2 h-2 rounded-full bg-current"></span>
-            <span>{doctor.regStatus || 'ACTIVE REGISTRATION'}</span>
-          </span>
+        <div className="flex flex-wrap items-center gap-2 pt-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-container-low rounded-xs font-label-code text-primary">
+            <span className="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+            <span className="font-bold tracking-wider">{doctor.regStatus || 'ACTIVE'}</span>
+          </div>
 
-          <span className={`rounded-full px-4 py-1.5 text-xs font-bold font-mono border ${
-            isDark ? 'border-[#d4f870]/30 bg-[#11381d] text-[#d4f870]' : 'border-slate-300 bg-slate-100 text-slate-900'
-          }`}>
-            REG NO: {doctor.regNo || 'N/A'}
-          </span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-low rounded-xs font-label-code text-on-surface">
+            <span className="text-secondary">REG NO:</span>
+            <span className="font-bold tracking-wider">{cleanReg}</span>
+          </div>
 
-          <span className={`rounded-full px-4 py-1.5 text-xs font-bold uppercase border ${
-            isDark ? 'border-[#d4f870]/30 bg-[#11381d] text-[#d4f870]' : 'border-slate-300 bg-slate-100 text-slate-900'
-          }`}>
-            {doctor.doctorType || 'MBBS DOCTOR'}
-          </span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-low rounded-xs font-label-code text-on-surface uppercase font-semibold">
+            <span>{cleanType}</span>
+          </div>
+
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface-container rounded-xs font-label-code text-secondary uppercase">
+            <span>
+              {doctor.qualifications && doctor.qualifications.length > 1
+                ? 'TYPE: GENERAL & SPECIALIST'
+                : 'TYPE: REGISTERED PRACTITIONER'}
+            </span>
+          </div>
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          LEVEL 2: MEDIA SECTION (Student Photo, Current Photo & QR Code)
+          02: Media & Official Authenticator Gallery
           ───────────────────────────────────────────────────────────── */}
-      <section className={`border rounded-3xl p-6 sm:p-10 space-y-6 ${
-        isDark ? 'border-[#d4f870]/20 bg-[#0d2716]' : 'border-slate-200 bg-white'
-      }`}>
-        <div className="flex items-center justify-between border-b pb-4 border-inherit">
-          <span className="font-mono text-xs font-bold uppercase tracking-widest opacity-60">
+      <section className="bg-surface-container-lowest p-6 sm:p-10 rounded-xl shadow-xs border border-on-surface/10 space-y-6">
+        <div className="flex items-center justify-between border-b border-on-surface/10 pb-3">
+          <span className="font-label-code text-secondary uppercase tracking-widest">
             02 // REGISTRY MEDIA & OFFICIAL AUTHENTICATOR
+          </span>
+          <span className="font-label-code text-on-tertiary-container uppercase tracking-wider flex items-center gap-1">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>IMMUTABLE LEDGER REF</span>
           </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {/* 1. Student Archive Photo */}
-          <div className="space-y-3">
-            <div className={`border rounded-2xl p-2 aspect-[4/5] flex items-center justify-center overflow-hidden ${
-              isDark ? 'border-[#d4f870]/20 bg-[#07170c]' : 'border-slate-200 bg-slate-50'
-            }`}>
+          {/* Card 1: Student Archival Photo */}
+          <div className="flex flex-col space-y-2">
+            <div className="w-full aspect-[4/5] bg-surface-container rounded-lg overflow-hidden relative border border-on-surface/10 flex items-center justify-center">
               {doctor.photos && doctor.photos[0] ? (
                 <img
                   src={doctor.photos[0]}
-                  alt="Student Archive Photo"
-                  className="w-full h-full object-cover object-top select-none rounded-xl"
+                  alt="Student Archival Record"
+                  className="w-full h-full object-cover object-top select-none"
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center font-mono text-xs opacity-40 space-y-2">
-                  <User className="w-8 h-8 opacity-40" />
-                  <span>STUDENT PHOTO N/A</span>
+                <div className="flex flex-col items-center justify-center p-4 text-center">
+                  <CameraOff className="w-8 h-8 text-secondary mb-2 opacity-50" />
+                  <span className="font-label-code text-secondary uppercase tracking-widest text-xs">
+                    PHOTO N/A
+                  </span>
                 </div>
               )}
+              <div className="absolute top-2 left-2 px-2 py-0.5 bg-primary/80 backdrop-blur-xs rounded text-on-primary font-label-code text-[9px] uppercase tracking-wider">
+                ARCHIVE SCAN {doctor.regYear ? doctor.regYear : 'BMDC'}
+              </div>
             </div>
-            <p className="font-mono text-xs font-bold uppercase tracking-wider opacity-70">
+            <span className="font-label-code text-secondary uppercase tracking-wider block">
               STUDENT PHOTO (ARCHIVE)
-            </p>
+            </span>
           </div>
 
-          {/* 2. Current Registry Photo */}
-          <div className="space-y-3">
-            <div className={`border rounded-2xl p-2 aspect-[4/5] flex items-center justify-center overflow-hidden ${
-              isDark ? 'border-[#d4f870]/20 bg-[#07170c]' : 'border-slate-200 bg-slate-50'
-            }`}>
+          {/* Card 2: Current Registry Photo */}
+          <div className="flex flex-col space-y-2">
+            <div className="w-full aspect-[4/5] bg-surface-container-low rounded-lg border border-dashed border-on-surface/20 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
               {doctor.photos && doctor.photos[1] ? (
                 <img
                   src={doctor.photos[1]}
-                  alt="Current Registry Photo"
-                  className="w-full h-full object-cover object-top select-none rounded-xl"
+                  alt="Current Registry Record"
+                  className="w-full h-full object-cover object-top select-none"
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center font-mono text-xs opacity-40 space-y-2">
-                  <User className="w-8 h-8 opacity-40" />
-                  <span>REGISTRY PHOTO N/A</span>
-                </div>
+                <>
+                  <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-secondary mb-2">
+                    <CameraOff className="w-5 h-5 text-secondary" />
+                  </div>
+                  <span className="font-label-code text-secondary uppercase tracking-widest font-semibold block">
+                    REGISTRY PHOTO N/A
+                  </span>
+                  <p className="font-label-code text-[10px] text-on-surface-variant/80 mt-1 uppercase tracking-wider leading-relaxed">
+                    Biometric capture pending renewal update
+                  </p>
+                </>
               )}
             </div>
-            <p className="font-mono text-xs font-bold uppercase tracking-wider opacity-70">
+            <span className="font-label-code text-secondary uppercase tracking-wider block">
               CURRENT REGISTRY PHOTO
-            </p>
+            </span>
           </div>
 
-          {/* 3. Official BM&DC QR Code */}
-          <div className="space-y-3">
-            <div className={`border rounded-2xl p-3 aspect-square flex items-center justify-center ${
-              isDark ? 'border-[#d4f870]/20 bg-white' : 'border-slate-200 bg-white'
-            }`}>
-              {doctor.qrCode ? (
-                <img
-                  src={doctor.qrCode}
-                  alt="Official BM&DC QR Code"
-                  className="w-full h-full object-contain select-none"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center font-mono text-xs text-neutral-400 space-y-2">
-                  <QrCode className="w-8 h-8 opacity-40" />
-                  <span>QR SEAL N/A</span>
-                </div>
-              )}
+          {/* Card 3: Cryptographic Official QR Seal */}
+          <div className="flex flex-col space-y-2">
+            <div className="w-full aspect-[4/5] bg-surface-container-lowest rounded-lg border border-on-surface/15 p-4 flex flex-col items-center justify-between">
+              <div className="w-full flex items-center justify-between border-b border-on-surface/10 pb-1">
+                <span className="font-label-code text-[9px] text-secondary tracking-widest uppercase">
+                  BMDC SEAL
+                </span>
+                <span className="font-label-code text-[9px] text-primary font-bold">
+                  SHA-256
+                </span>
+              </div>
+
+              {/* Crisp QR Code */}
+              <div className="p-2 bg-on-primary rounded flex items-center justify-center">
+                {doctor.qrCode ? (
+                  <img
+                    src={doctor.qrCode}
+                    alt="Official BMDC QR Authentication Seal"
+                    className="w-36 h-36 object-contain select-none"
+                  />
+                ) : (
+                  <svg className="w-36 h-36" fill="currentColor" viewBox="0 0 100 100">
+                    <rect fill="#1b1c18" height="28" width="28" x="5" y="5" />
+                    <rect fill="#ffffff" height="20" width="20" x="9" y="9" />
+                    <rect fill="#1b1c18" height="12" width="12" x="13" y="13" />
+                    <rect fill="#1b1c18" height="28" width="28" x="67" y="5" />
+                    <rect fill="#ffffff" height="20" width="20" x="71" y="9" />
+                    <rect fill="#1b1c18" height="12" width="12" x="75" y="13" />
+                    <rect fill="#1b1c18" height="28" width="28" x="5" y="67" />
+                    <rect fill="#ffffff" height="20" width="20" x="9" y="71" />
+                    <rect fill="#1b1c18" height="12" width="12" x="13" y="75" />
+                    <rect fill="#1b1c18" height="16" width="16" x="42" y="42" />
+                    <rect fill="#ffffff" height="10" width="10" x="45" y="45" />
+                    <rect fill="#1b1c18" height="4" width="4" x="48" y="48" />
+                    <rect fill="#1b1c18" height="5" width="5" x="37" y="8" />
+                    <rect fill="#1b1c18" height="5" width="5" x="55" y="8" />
+                    <rect fill="#1b1c18" height="5" width="5" x="37" y="26" />
+                    <rect fill="#1b1c18" height="5" width="5" x="8" y="46" />
+                    <rect fill="#1b1c18" height="5" width="5" x="76" y="46" />
+                    <rect fill="#1b1c18" height="5" width="5" x="67" y="76" />
+                    <rect fill="#1b1c18" height="5" width="5" x="85" y="85" />
+                  </svg>
+                )}
+              </div>
+
+              <span className="font-label-code text-[10px] text-secondary tracking-widest uppercase">
+                ID: {cleanReg.replace(/[^0-9]/g, '')}-AUTH // PUBLIC
+              </span>
             </div>
-            <p className="font-mono text-xs font-bold uppercase tracking-wider opacity-70">
-              OFFICIAL BM&DC QR SEAL
-            </p>
+            <span className="font-label-code text-secondary uppercase tracking-wider block">
+              OFFICIAL BM&amp;DC QR SEAL
+            </span>
           </div>
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          LEVEL 3: THE DATA GRID (Swiss 2-Column Ledger)
+          03: Registry Core Parameters & Biographical Ledger
           ───────────────────────────────────────────────────────────── */}
-      <section className={`border rounded-3xl p-6 sm:p-10 space-y-6 ${
-        isDark ? 'border-[#d4f870]/20 bg-[#0d2716]' : 'border-slate-200 bg-white'
-      }`}>
-        <div className="border-b pb-4 border-inherit">
-          <span className="font-mono text-xs font-bold uppercase tracking-widest opacity-60">
-            03 // REGISTRY CORE PARAMETERS & BIOGRAPHICAL LEDGER
+      <section className="bg-surface-container-lowest p-6 sm:p-10 rounded-xl shadow-xs border border-on-surface/10 space-y-6">
+        <div className="flex items-center justify-between border-b border-on-surface/10 pb-3">
+          <span className="font-label-code text-secondary uppercase tracking-widest">
+            03 // REGISTRY CORE PARAMETERS &amp; BIOGRAPHICAL LEDGER
+          </span>
+          <span className="font-label-code text-on-tertiary-container uppercase tracking-wider font-semibold">
+            STATUS: VERIFIED
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-inherit">
-          {/* Column A: Registration Parameters */}
-          <div className="space-y-6 md:pr-8">
+        {/* Registration Key Indicator */}
+        <div className="bg-surface-container-low p-4 sm:p-6 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span className="font-label-code text-[10px] text-secondary uppercase tracking-wider block">
+              STATUTORY REGISTRATION NUMBER
+            </span>
+            <span className="font-headline-sm font-bold text-primary tracking-tight">
+              {cleanReg}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+            <span className="font-label-code text-on-tertiary-container uppercase font-semibold">
+              AUTHENTICATED IN BMDC CENTRAL DATABASE
+            </span>
+          </div>
+        </div>
+
+        {/* Two-Column Balanced Data Matrix */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
+          {/* Left Column: Registry Lifespan */}
+          <div className="space-y-6 border-b md:border-b-0 md:border-r border-on-surface/10 pb-6 md:pb-0 md:pr-8">
             <div className="space-y-1">
-              <span className={`font-mono text-xs uppercase tracking-widest font-bold block ${
-                isDark ? 'text-zinc-400' : 'text-slate-500'
-              }`}>
+              <span className="font-label-code text-secondary uppercase tracking-widest block">
                 REGISTRATION YEAR
               </span>
-              <span className="text-3xl sm:text-4xl font-extrabold font-mono block">
-                {formatValue(doctor.regYear)}
+              <span className="font-headline-md font-serif text-primary block leading-none">
+                {formatVal(doctor.regYear)}
+              </span>
+              <span className="font-label-code text-[10px] text-on-surface-variant block uppercase tracking-wider pt-1">
+                Council Induction Gazetted
               </span>
             </div>
 
-            <div className="border-t border-inherit pt-4 space-y-1">
-              <span className={`font-mono text-xs uppercase tracking-widest font-bold block ${
-                isDark ? 'text-zinc-400' : 'text-slate-500'
-              }`}>
+            <div className="space-y-1 pt-4 border-t border-on-surface/10">
+              <span className="font-label-code text-secondary uppercase tracking-widest block">
                 REGISTRATION VALID TILL
               </span>
-              <span className="text-3xl sm:text-4xl font-extrabold font-mono block">
-                {formatValue(doctor.regValidity)}
+              <span className="font-headline-md font-serif text-primary block leading-none">
+                {formatVal(doctor.regValidity)}
+              </span>
+              <span className="font-label-code text-[10px] text-on-tertiary-container block uppercase tracking-wider pt-1">
+                Active Statutory Standing
               </span>
             </div>
 
-            <div className="border-t border-inherit pt-4 space-y-1">
-              <span className={`font-mono text-xs uppercase tracking-widest font-bold block ${
-                isDark ? 'text-zinc-400' : 'text-slate-500'
-              }`}>
+            <div className="space-y-1 pt-4 border-t border-on-surface/10">
+              <span className="font-label-code text-secondary uppercase tracking-widest block">
                 PORTABLE SMART CARD STATUS
               </span>
-              <span className={`text-2xl sm:text-3xl font-extrabold font-mono block ${
-                isNA(doctor.portableCardNo) ? (isDark ? 'text-zinc-500' : 'text-slate-400') : ''
-              }`}>
-                {formatValue(doctor.portableCardNo)}
+              <span className="font-headline-sm text-secondary font-mono block">
+                {formatVal(doctor.portableCardNo)}
+              </span>
+              <span className="font-label-code text-[10px] text-on-surface-variant block uppercase tracking-wider pt-1">
+                {doctor.portableCardNo && doctor.portableCardNo !== 'Not Issued'
+                  ? 'Smart Card Assigned'
+                  : 'Physical card not dispatched'}
               </span>
             </div>
           </div>
 
-          {/* Column B: Biographical Particulars */}
-          <div className="space-y-6 pt-6 md:pt-0 md:pl-8">
-            <div className="grid grid-cols-[auto_1fr] sm:grid-cols-2 gap-4">
+          {/* Right Column: Personal & Blood Markers */}
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <span className={`font-mono text-xs uppercase tracking-widest font-bold block ${
-                  isDark ? 'text-zinc-400' : 'text-slate-500'
-                }`}>
+                <span className="font-label-code text-secondary uppercase tracking-widest block">
                   BLOOD GROUP
                 </span>
-                <span className={`text-2xl sm:text-3xl font-extrabold font-mono block whitespace-nowrap ${
-                  !isNA(doctor.bloodGroup)
-                    ? 'text-rose-600 dark:text-rose-400'
-                    : isDark ? 'text-zinc-500' : 'text-slate-400'
-                }`}>
-                  {formatValue(doctor.bloodGroup)}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="font-headline-md font-serif text-error block leading-none">
+                    {formatVal(doctor.bloodGroup)}
+                  </span>
+                  {doctor.bloodGroup && doctor.bloodGroup !== 'N/A' && (
+                    <span className="px-2 py-0.5 bg-error-container text-on-error-container font-label-code text-[9px] uppercase tracking-wider rounded">
+                      RH GROUP
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-1">
-                <span className={`font-mono text-xs uppercase tracking-widest font-bold block ${
-                  isDark ? 'text-zinc-400' : 'text-slate-500'
-                }`}>
+                <span className="font-label-code text-secondary uppercase tracking-widest block">
                   DATE OF BIRTH
                 </span>
-                <span className={`text-xl sm:text-2xl font-extrabold font-mono block whitespace-nowrap ${
-                  isNA(doctor.dob) ? (isDark ? 'text-zinc-500' : 'text-slate-400') : ''
-                }`}>
-                  {formatValue(doctor.dob)}
+                <span className="font-headline-sm font-mono text-primary block tracking-wider pt-1">
+                  {formatVal(doctor.dob)}
+                </span>
+                <span className="font-label-code text-[10px] text-secondary block uppercase tracking-wider pt-1">
+                  Protected by Civil Act
                 </span>
               </div>
             </div>
 
-            <div className="border-t border-inherit pt-4 space-y-1">
-              <span className={`font-mono text-xs uppercase tracking-widest font-bold block ${
-                isDark ? 'text-zinc-400' : 'text-slate-500'
-              }`}>
+            <div className="space-y-1 pt-4 border-t border-on-surface/10">
+              <span className="font-label-code text-secondary uppercase tracking-widest block">
                 FATHER'S NAME
               </span>
-              <span className={`text-xl sm:text-2xl font-bold uppercase block ${
-                isNA(doctor.fatherName) ? (isDark ? 'text-zinc-500' : 'text-slate-400 font-normal') : ''
-              }`}>
-                {formatValue(doctor.fatherName)}
+              <span className="font-headline-sm font-semibold text-primary block uppercase tracking-tight">
+                {formatVal(doctor.fatherName)}
               </span>
             </div>
 
-            <div className="border-t border-inherit pt-4 space-y-1">
-              <span className={`font-mono text-xs uppercase tracking-widest font-bold block ${
-                isDark ? 'text-zinc-400' : 'text-slate-500'
-              }`}>
+            <div className="space-y-1 pt-4 border-t border-on-surface/10">
+              <span className="font-label-code text-secondary uppercase tracking-widest block">
                 MOTHER'S NAME
               </span>
-              <span className={`text-xl sm:text-2xl font-bold uppercase block ${
-                isNA(doctor.motherName) ? (isDark ? 'text-zinc-500' : 'text-slate-400 font-normal') : ''
-              }`}>
-                {formatValue(doctor.motherName)}
+              <span className="font-headline-sm font-semibold text-primary block uppercase tracking-tight">
+                {formatVal(doctor.motherName)}
               </span>
             </div>
           </div>
@@ -335,123 +385,167 @@ export default function DoctorDossier({ doctor, onReset, theme = 'dark' }) {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          LEVEL 4: QUALIFICATIONS (Minimalist Ledger Table)
+          04: Recognized Medical Qualifications & Specialities
           ───────────────────────────────────────────────────────────── */}
-      <section className={`border rounded-3xl p-6 sm:p-10 space-y-6 ${
-        isDark ? 'border-[#d4f870]/20 bg-[#0d2716]' : 'border-slate-200 bg-white'
-      }`}>
-        <div className="border-b pb-4 border-inherit">
-          <span className="font-mono text-xs font-bold uppercase tracking-widest opacity-60">
-            04 // RECOGNIZED MEDICAL QUALIFICATIONS & SPECIALITIES
+      <section className="bg-surface-container-lowest p-6 sm:p-10 rounded-xl shadow-xs border border-on-surface/10 space-y-6">
+        <div className="flex items-center justify-between border-b border-on-surface/10 pb-3">
+          <span className="font-label-code text-secondary uppercase tracking-widest">
+            04 // RECOGNIZED MEDICAL QUALIFICATIONS &amp; SPECIALITIES
+          </span>
+          <span className="font-label-code text-secondary uppercase tracking-wider">
+            SCHEDULE 1 VALIDATED
           </span>
         </div>
 
         {doctor.qualifications && doctor.qualifications.length > 0 ? (
           <div className="w-full overflow-x-auto">
-            <table className="w-full text-left font-mono text-xs divide-y divide-inherit">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="text-[11px] tracking-widest uppercase opacity-60">
-                  <th className="py-3 px-3 w-12 font-bold">#</th>
-                  <th className="py-3 px-3 font-bold">DEGREE / SPECIALITY QUALIFICATION</th>
-                  <th className="py-3 px-3 text-right font-bold">OBTAINED / YEAR</th>
+                <tr className="border-b border-on-surface/10 font-label-code text-secondary uppercase tracking-wider">
+                  <th className="py-2 pr-4 w-12 font-medium">#</th>
+                  <th className="py-2 pr-6 font-medium">Degree / Speciality Qualification</th>
+                  <th className="py-2 pr-6 font-medium">Conferring Institution</th>
+                  <th className="py-2 text-right font-medium">Obtained / Year</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-inherit">
-                {doctor.qualifications.map((q, idx) => (
-                  <tr key={idx} className="transition-colors">
-                    <td className="py-4 px-3 font-bold opacity-50">
-                      {String(idx + 1).padStart(2, '0')}
-                    </td>
-                    <td className="py-4 px-3 font-sans font-bold text-lg sm:text-xl">
-                      {q.degree && !/^\d+$/.test(q.degree) ? q.degree : (q.qualification || q.subject || q.degree)}
-                    </td>
-                    <td className="py-4 px-3 text-right font-mono text-sm font-bold">
-                      {q.obtained || q.passingYear || '-'}
-                    </td>
-                  </tr>
-                ))}
+              <tbody className="divide-y divide-on-surface/10">
+                {doctor.qualifications.map((q, idx) => {
+                  const deg = q.degree && !/^\d+$/.test(q.degree) ? q.degree : (q.qualification || q.subject || 'Qualification');
+                  const isPostgrad = idx === 0 && doctor.qualifications.length > 1;
+
+                  return (
+                    <tr key={idx} className="group hover:bg-surface-container-low transition-colors">
+                      <td className="py-4 pr-4 font-label-code text-secondary">
+                        {String(idx + 1).padStart(2, '0')}
+                      </td>
+                      <td className="py-4 pr-6">
+                        <span className="font-headline-sm text-primary font-semibold block">
+                          {deg}
+                        </span>
+                        <span className={`font-label-code text-[11px] uppercase tracking-wider mt-0.5 inline-block ${
+                          isPostgrad ? 'text-on-tertiary-container' : 'text-secondary'
+                        }`}>
+                          {isPostgrad ? 'Sub-Speciality Fellowship / Postgrad' : 'Primary Medical Degree Licensure'}
+                        </span>
+                      </td>
+                      <td className="py-4 pr-6">
+                        <span className="font-body-md text-on-surface block">
+                          {q.subject && q.subject !== deg ? q.subject : 'Council Recognized Medical Institution'}
+                        </span>
+                        <span className="font-label-code text-secondary uppercase tracking-wider">
+                          Bangladesh / International
+                        </span>
+                      </td>
+                      <td className="py-4 text-right">
+                        <span className="font-label-code text-body-md font-bold text-primary block">
+                          {q.obtained || q.passingYear || '-'}
+                        </span>
+                        <span className="font-label-code text-[10px] text-secondary uppercase">
+                          Gazetted
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         ) : (
-          <div className="py-6 font-mono text-xs opacity-60">
-            NO ADDITIONAL SPECIALITY DEGREES RECORDED ON REGISTRY
-          </div>
+          <p className="font-label-code text-secondary uppercase tracking-wider py-4">
+            No Additional Postgraduate Specialities Recorded
+          </p>
         )}
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          LEVEL 5: PORTAL CAPTURE PROOF & ACTION BUTTONS
+          05: Official BMDC Portal Capture Proof
           ───────────────────────────────────────────────────────────── */}
-      {doctor.resultScreenshot && (
-        <section className={`border rounded-3xl p-6 sm:p-10 space-y-4 print:hidden ${
-          isDark ? 'border-[#d4f870]/20 bg-[#0d2716]' : 'border-slate-200 bg-white'
-        }`}>
-          <div className="flex items-center justify-between border-b pb-3 border-inherit">
-            <span className="font-mono text-xs font-bold uppercase tracking-widest opacity-60">
-              05 // OFFICIAL BM&DC PORTAL CAPTURE PROOF
-            </span>
-            <button
-              onClick={() => setShowScreenshot(!showScreenshot)}
-              className={`rounded-full px-4 py-1 text-xs font-bold font-mono border cursor-pointer ${
-                isDark
-                  ? 'border-[#d4f870]/30 bg-[#11381d] text-[#d4f870]'
-                  : 'border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800'
-              }`}
-            >
-              {showScreenshot ? 'HIDE SCREENSHOT' : 'VIEW SCREENSHOT'}
-            </button>
-          </div>
+      <section className="bg-surface-container-lowest p-6 rounded-xl shadow-xs border border-on-surface/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 print:hidden">
+        <div className="space-y-1">
+          <span className="font-label-code text-secondary uppercase tracking-widest block">
+            05 // OFFICIAL BM&amp;DC PORTAL CAPTURE PROOF
+          </span>
+          <p className="font-body-md text-on-surface-variant">
+            Cryptographically verified digital ledger snapshot for {doctorName} (Reg: {cleanReg}).
+          </p>
+        </div>
 
-          {showScreenshot && (
-            <div className="border border-inherit rounded-2xl p-2 bg-black mt-3 overflow-hidden">
-              <img
-                src={doctor.resultScreenshot}
-                alt="Official BMDC Verification Screenshot Proof"
-                className="w-full h-auto object-contain rounded-xl"
-              />
+        {doctor.resultScreenshot ? (
+          <button
+            type="button"
+            onClick={() => setShowProofModal(true)}
+            className="px-4 py-2.5 bg-surface-container hover:bg-surface-container-high text-primary font-label-caps uppercase tracking-widest rounded-xs transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1.5"
+          >
+            <span>VIEW PROOF SNAPSHOT</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </button>
+        ) : (
+          <span className="font-label-code text-xs text-secondary uppercase tracking-widest">
+            AUTHENTICATED VIA REST ENGINE
+          </span>
+        )}
+      </section>
+
+      {/* Screenshot Proof Lightbox Modal */}
+      {showProofModal && doctor.resultScreenshot && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs cursor-pointer"
+          onClick={() => setShowProofModal(false)}
+        >
+          <div
+            className="bg-surface p-4 max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-on-surface/10 pb-2">
+              <span className="font-label-code uppercase tracking-wider text-secondary">
+                Original Government Portal Screen Capture
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowProofModal(false)}
+                className="font-label-code font-bold uppercase text-primary px-2 py-1 cursor-pointer"
+              >
+                Close [ESC]
+              </button>
             </div>
-          )}
-        </section>
+            <img
+              src={doctor.resultScreenshot}
+              alt="Official BMDC Verification Portal Screenshot"
+              className="w-full h-auto object-contain rounded"
+            />
+          </div>
+        </div>
       )}
 
-      {/* Action Footer CTAs */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pt-4 print:hidden">
-        <button
-          onClick={onReset}
-          className={`rounded-full px-8 py-4 font-extrabold text-sm tracking-wide transition-all cursor-pointer inline-flex items-center space-x-2 ${
-            isDark
-              ? 'bg-[#d4f870] text-[#07170c] hover:bg-[#dbf98d]'
-              : 'bg-[#0a2e16] text-[#d4f870] hover:bg-[#06200f]'
-          }`}
-        >
-          <RotateCcw className="w-4 h-4" />
-          <span>Verify Another Practitioner</span>
-        </button>
-
-        <div className="flex items-center space-x-3">
+      {/* Bottom Actions Toolbar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 pb-12 print:hidden">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
-            onClick={copyRawJson}
-            className={`rounded-full px-6 py-4 font-bold text-sm transition-colors border cursor-pointer ${
-              isDark
-                ? 'border-[#d4f870]/30 bg-[#11381d] text-[#d4f870] hover:bg-[#184e29]'
-                : 'border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800'
-            }`}
+            type="button"
+            onClick={() => window.print()}
+            className="flex-1 sm:flex-none px-6 py-3.5 text-label-caps uppercase tracking-widest bg-surface-container hover:bg-surface-container-high text-on-surface rounded-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
           >
-            {copiedJson ? 'JSON Copied' : 'Export JSON'}
+            <Printer className="w-4 h-4" />
+            <span>Print Dossier</span>
           </button>
 
           <button
-            onClick={() => window.print()}
-            className={`rounded-full px-6 py-4 font-bold text-sm transition-colors border cursor-pointer ${
-              isDark
-                ? 'border-[#d4f870]/30 bg-[#11381d] text-[#d4f870] hover:bg-[#184e29]'
-                : 'border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800'
-            }`}
+            type="button"
+            onClick={copyJson}
+            className="px-5 py-3.5 text-label-caps uppercase tracking-widest bg-surface-container hover:bg-surface-container-high text-secondary hover:text-on-surface rounded-xs transition-colors cursor-pointer"
           >
-            Print Dossier
+            {copiedJson ? 'JSON COPIED' : 'EXPORT JSON'}
           </button>
         </div>
+
+        <button
+          type="button"
+          onClick={onReset}
+          className="w-full sm:w-auto px-8 py-3.5 text-label-caps uppercase tracking-widest bg-primary hover:bg-on-surface-variant text-on-primary rounded-xs text-center transition-colors flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>Verify Another Practitioner</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );

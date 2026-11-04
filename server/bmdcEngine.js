@@ -115,7 +115,10 @@ async function initSession(rawRegNo, doctorType = 'MBBS') {
       '--window-position=-2400,-2400',
       '--window-size=1280,900',
       '--no-sandbox',
-      '--disable-setuid-sandbox'
+      '--disable-setuid-sandbox',
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding'
     ],
     customConfig: {},
     turnstile: true,
@@ -130,17 +133,25 @@ async function initSession(rawRegNo, doctorType = 'MBBS') {
   try {
     // Navigate to BMDC verification portal
     console.log(`[BMDC Engine] [${sessionId}] Navigating to https://verify.bmdc.org.bd/...`);
-    await page.goto('https://verify.bmdc.org.bd/', { waitUntil: 'domcontentloaded', timeout: 35000 });
+    await page.goto('https://verify.bmdc.org.bd/', { waitUntil: 'domcontentloaded', timeout: 45000 });
 
-    // Wait for Turnstile to clear and page title to settle
+    // Wait for Turnstile to clear and page title / #regform to settle
     let bypassed = false;
-    for (let i = 0; i < 15; i++) {
-      await new Promise((r) => setTimeout(r, 1000));
-      const title = await page.title();
-      if (!title.includes('Just a moment')) {
+    for (let i = 0; i < 35; i++) {
+      const hasForm = await page.$('#regform').catch(() => null);
+      if (hasForm) {
         bypassed = true;
         break;
       }
+      const title = await page.title().catch(() => '');
+      if (title && !title.includes('Just a moment')) {
+        try {
+          await page.waitForSelector('#regform', { timeout: 8000 });
+          bypassed = true;
+          break;
+        } catch (e) {}
+      }
+      await new Promise((r) => setTimeout(r, 1000));
     }
 
     if (!bypassed) {
@@ -148,7 +159,7 @@ async function initSession(rawRegNo, doctorType = 'MBBS') {
     }
 
     // Ensure form is visible
-    await page.waitForSelector('#regform', { timeout: 10000 });
+    await page.waitForSelector('#regform', { timeout: 12000 });
 
     // Select doctor type (MBBS = value 1, BDS = value 2)
     const radioVal = doctorType.toUpperCase() === 'BDS' ? '2' : '1';

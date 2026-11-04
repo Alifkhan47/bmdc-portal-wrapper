@@ -1,158 +1,177 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
 
-const normalizeType = (type) => (String(type || '').toUpperCase().includes('BDS') ? 'BDS' : 'MBBS');
-
-export default function SearchForm({ onSearch, isLoading, theme = 'dark', doctorType = 'MBBS', onDoctorTypeChange }) {
+export default function SearchForm({
+  onSearch,
+  isLoading,
+  doctorType = 'MBBS',
+  onDoctorTypeChange
+}) {
   const [rawInput, setRawInput] = useState('');
-  const [selectedType, setSelectedType] = useState(() => normalizeType(doctorType));
-  const isDark = theme === 'dark';
+  const [isFocused, setIsFocused] = useState(false);
 
-  // Ensure state stays synced and defaults to MBBS
-  useEffect(() => {
-    setSelectedType(normalizeType(doctorType));
-  }, [doctorType]);
+  const isBds = String(doctorType || '').toUpperCase().includes('BDS');
+  const activeType = isBds ? 'BDS' : 'MBBS';
 
-  const handleTypeChange = (type) => {
-    const normalized = normalizeType(type);
-    setSelectedType(normalized);
-    if (onDoctorTypeChange) onDoctorTypeChange(normalized);
-  };
-
-  const isBds = normalizeType(selectedType) === 'BDS';
-  const isMbbs = !isBds; // Guaranteed auto-selected MBBS default
-
-  // Silently sanitized registration number (digits only)
+  // Sanitized digits for the query
   const cleanNumber = rawInput.replace(/[^0-9]/g, '');
   const hasPrefix = /[a-zA-Z\-_]/.test(rawInput);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!cleanNumber) return;
-    onSearch(cleanNumber, isBds ? 'BDS' : 'MBBS');
+  const handleSelectDiscipline = (type) => {
+    if (onDoctorTypeChange) {
+      onDoctorTypeChange(type);
+    }
   };
 
-  const handleQuickSample = (reg, type = 'MBBS') => {
-    setRawInput(reg);
-    handleTypeChange(type);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!cleanNumber || isLoading) return;
+    onSearch(cleanNumber, activeType);
+  };
+
+  const handleSample = (sampleVal, sampleType = 'MBBS') => {
+    setRawInput(sampleVal);
+    handleSelectDiscipline(sampleType);
   };
 
   return (
-    <div className={`w-full border rounded-3xl p-6 sm:p-10 space-y-8 transition-colors ${
-      isDark ? 'border-[#d4f870]/20 bg-[#0d2716] text-[#f2fdf4]' : 'border-slate-200 bg-white text-slate-900'
-    }`}>
-      {/* Category Toggle Bar (Left-aligned) */}
-      <div className="flex items-center justify-start border-b pb-6 border-inherit">
-        <div className={`inline-flex rounded-full p-1 border ${
-          isDark ? 'bg-[#07170c] border-[#d4f870]/20' : 'bg-slate-100 border-slate-200'
-        }`}>
-          <button
-            type="button"
-            onClick={() => handleTypeChange('MBBS')}
-            className={`rounded-full px-5 py-2 text-xs font-extrabold tracking-wide transition-colors cursor-pointer ${
-              isMbbs
-                ? isDark
-                  ? 'bg-[#d4f870] text-[#07170c]'
-                  : 'bg-[#0a2e16] text-[#d4f870]'
-                : isDark
-                ? 'text-[#d4f870]/70 hover:text-[#d4f870]'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            MBBS DOCTOR
-          </button>
-          <button
-            type="button"
-            onClick={() => handleTypeChange('BDS')}
-            className={`rounded-full px-5 py-2 text-xs font-extrabold tracking-wide transition-colors cursor-pointer ${
-              isBds
-                ? isDark
-                  ? 'bg-[#d4f870] text-[#07170c]'
-                  : 'bg-[#0a2e16] text-[#d4f870]'
-                : isDark
-                ? 'text-[#d4f870]/70 hover:text-[#d4f870]'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            BDS DENTAL
-          </button>
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 py-6 sm:py-12 flex flex-col justify-center">
+      {/* Archival Top Reference Marker */}
+      <div className="flex items-center justify-between pb-6 sm:pb-8">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 bg-tertiary-fixed-dim inline-block"></span>
+          <span className="font-label-code text-secondary uppercase tracking-widest">
+            Sec. 01 / Practitioner Lookup
+          </span>
+        </div>
+        <div className="font-label-code uppercase text-on-surface-variant tracking-widest">
+          Form Reg-24
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-semibold">
-            <label className={`uppercase tracking-wider font-bold ${
-              isDark ? 'text-zinc-300' : 'text-slate-600'
-            }`}>
-              Council Registration Number
-            </label>
-            <div className="flex items-center space-x-2">
-              <span className="text-slate-400">Sample:</span>
+      {/* Editorial Monolithic Headline */}
+      <div className="pb-8 sm:pb-12">
+        <h1 className="font-headline-lg text-on-surface font-normal tracking-tight font-serif">
+          Verify Doctor
+        </h1>
+      </div>
+
+      {/* Minimal Form Engine */}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-8 sm:gap-10">
+        {/* Typographic Category Switcher */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="font-label-code uppercase tracking-widest text-secondary">
+              Discipline
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-label-code text-secondary">SAMPLE:</span>
               <button
                 type="button"
-                onClick={() => handleQuickSample('A-33919', 'MBBS')}
-                className={`rounded-full px-3 py-1 font-bold border underline transition-colors cursor-pointer ${
-                  isDark
-                    ? 'border-[#d4f870]/30 bg-[#11381d] text-[#d4f870] hover:bg-[#184e29]'
-                    : 'border-slate-300 bg-slate-100 text-slate-800 hover:bg-slate-200'
-                }`}
+                onClick={() => handleSample('A-33919', 'MBBS')}
+                className="font-label-code text-primary underline underline-offset-2 hover:text-secondary cursor-pointer"
               >
                 A-33919 (MBBS)
               </button>
             </div>
           </div>
 
-          <div className="relative">
+          <div className="flex items-center gap-8 pt-1">
+            <button
+              type="button"
+              onClick={() => handleSelectDiscipline('MBBS')}
+              className="group text-left cursor-pointer py-1"
+            >
+              <span className={`font-headline-sm transition-colors ${
+                !isBds ? 'text-on-surface font-semibold' : 'text-secondary group-hover:text-on-surface'
+              }`}>
+                MBBS
+              </span>
+              <div className={`h-0.5 w-full mt-1 transition-all ${
+                !isBds ? 'bg-primary' : 'bg-transparent'
+              }`} />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSelectDiscipline('BDS')}
+              className="group text-left cursor-pointer py-1"
+            >
+              <span className={`font-headline-sm transition-colors ${
+                isBds ? 'text-on-surface font-semibold' : 'text-secondary group-hover:text-on-surface'
+              }`}>
+                BDS
+              </span>
+              <div className={`h-0.5 w-full mt-1 transition-all ${
+                isBds ? 'bg-primary' : 'bg-transparent'
+              }`} />
+            </button>
+          </div>
+        </div>
+
+        {/* Main Input Canvas */}
+        <div className="relative flex flex-col pt-2 sm:pt-4">
+          <label
+            htmlFor="regInput"
+            className="font-label-code uppercase tracking-widest text-secondary pb-2"
+          >
+            Practitioner Registration Number
+          </label>
+
+          <div className="relative flex items-baseline">
             <input
+              id="regInput"
               type="text"
+              name="registration"
               value={rawInput}
               onChange={(e) => setRawInput(e.target.value)}
-              placeholder="e.g. A-33919 or 33919"
-              disabled={isLoading}
-              maxLength={15}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              placeholder={activeType === 'MBBS' ? 'A-00000' : 'D-00000'}
+              autoComplete="off"
+              spellCheck="false"
               autoFocus
-              className={`w-full border-b-2 py-4 text-2xl sm:text-4xl font-extrabold tracking-tight bg-transparent transition-colors focus:outline-none placeholder:opacity-30 ${
-                isDark
-                  ? 'border-zinc-700 text-[#f2fdf4] placeholder:text-zinc-700 focus:border-[#d4f870]'
-                  : 'border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#0a2e16]'
-              }`}
+              disabled={isLoading}
+              className="w-full bg-transparent font-serif text-3xl sm:text-5xl md:text-6xl text-on-surface placeholder:text-outline-variant/50 focus:outline-none uppercase tracking-tight py-2"
             />
             {rawInput && (
               <button
                 type="button"
                 onClick={() => setRawInput('')}
-                className={`absolute right-0 top-1/2 -translate-y-1/2 text-xs font-bold uppercase rounded-full px-3 py-1 border cursor-pointer ${
-                  isDark
-                    ? 'border-red-400/40 bg-red-950/40 text-red-300'
-                    : 'border-red-300 bg-red-50 text-red-700 hover:bg-red-100'
-                }`}
+                className="font-label-code uppercase tracking-wider text-secondary hover:text-primary cursor-pointer px-2 py-1"
               >
-                Clear
+                CLEAR
               </button>
             )}
           </div>
 
+          {/* Hairline Focus Bar */}
+          <div className={`w-full transition-all duration-300 mt-2 ${
+            isFocused ? 'h-[2px] bg-primary' : 'h-[1px] bg-on-surface/40'
+          }`} />
+
           {hasPrefix && cleanNumber && (
-            <p className="text-xs font-mono font-semibold text-slate-500 dark:text-zinc-400 pt-1">
-              NORMALIZED QUERY ID: <strong className="text-slate-900 dark:text-white">{cleanNumber}</strong>
+            <p className="font-label-code text-secondary text-[11px] uppercase tracking-wider pt-2">
+              NORMALIZED QUERY ID: <strong className="text-primary font-bold">{cleanNumber}</strong>
             </p>
           )}
         </div>
 
-        {/* Action Button */}
-        <div className="pt-2">
+        {/* Action Panel & Interaction */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 bg-tertiary-fixed-dim inline-block animate-pulse"></span>
+            <span className="font-label-code uppercase tracking-widest text-secondary">
+              BMDC Central Master Index Synchronized
+            </span>
+          </div>
+
           <button
             type="submit"
             disabled={!cleanNumber || isLoading}
-            className={`rounded-full px-8 py-4 font-extrabold text-sm tracking-wide transition-all cursor-pointer inline-flex items-center space-x-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-              isDark
-                ? 'bg-[#d4f870] text-[#07170c] hover:bg-[#dbf98d]'
-                : 'bg-[#0a2e16] text-[#d4f870] hover:bg-[#06200f]'
-            }`}
+            className="inline-flex items-center justify-center gap-2 bg-primary text-on-primary font-label-caps uppercase tracking-widest px-8 py-4 hover:bg-on-surface-variant transition-all cursor-pointer self-start sm:self-auto disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <span>{isLoading ? 'Querying Council Registry...' : 'Start Verification'}</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>{isLoading ? 'Querying Index...' : 'Verify'}</span>
+            <span className="font-label-code font-bold">→</span>
           </button>
         </div>
       </form>

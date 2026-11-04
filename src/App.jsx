@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from './components/Header';
 import SearchForm from './components/SearchForm';
 import CaptchaModal from './components/CaptchaModal';
@@ -7,11 +7,6 @@ import DoctorDossier from './components/DoctorDossier';
 import ErrorBanner from './components/ErrorBanner';
 
 export default function App() {
-  const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem('bmdc_theme_pref');
-    if (saved === 'light' || saved === 'dark') return saved;
-    return 'light';
-  });
   const [currentDoctorType, setCurrentDoctorType] = useState('MBBS');
   const [activeRegNo, setActiveRegNo] = useState('');
   const [viewState, setViewState] = useState('idle'); // 'idle' | 'initializing' | 'verifying' | 'result' | 'error'
@@ -21,24 +16,6 @@ export default function App() {
   const [captchaError, setCaptchaError] = useState('');
   const [generalError, setGeneralError] = useState('');
   const [doctorData, setDoctorData] = useState(null);
-
-  useEffect(() => {
-    localStorage.setItem('bmdc_theme_pref', theme);
-    localStorage.setItem('bmdc_theme', theme);
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  };
-
-  const isDark = theme === 'dark';
 
   // Step 1: Initialize Headless Session & Intercept CAPTCHA
   const handleStartSearch = async (cleanRegNo, doctorType) => {
@@ -184,70 +161,54 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col justify-between transition-colors duration-200 ${
-      isDark ? 'bg-[#07170c] text-[#f2fdf4]' : 'bg-[#f6f8f6] text-slate-900'
-    }`}>
+    <div className="min-h-screen bg-background text-on-surface flex flex-col justify-between selection:bg-primary selection:text-surface">
       {/* Top Header Navbar */}
       <Header
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        doctorType={doctorData?.doctorType || currentDoctorType}
+        currentView={viewState}
         onHomeClick={handleReset}
       />
 
-      {/* Main Container: Centered max-w-5xl */}
-      <main className="max-w-5xl mx-auto w-full px-4 sm:px-8 py-6 sm:py-10 flex-1 space-y-8">
-        {/* Dynamic State Views */}
+      {/* Main Content Area */}
+      <main className="w-full pt-28 pb-12 flex-1 flex flex-col justify-start">
+        {/* State: Initializing or Verifying */}
         {(viewState === 'initializing' || viewState === 'verifying') && (
           <LoadingSteps
             viewState={viewState}
-            theme={theme}
             regNo={activeRegNo || sessionData?.cleanRegNo}
             doctorType={sessionData?.doctorType || currentDoctorType}
           />
         )}
 
+        {/* State: Error */}
         {viewState === 'error' && (
-          <div className="space-y-6">
-            <ErrorBanner message={generalError} onRetry={handleReset} theme={theme} />
-            <h1 className={`text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] max-w-3xl ${
-              isDark ? 'text-[#f2fdf4]' : 'text-slate-900'
-            }`}>
-              Verify Medical & Dental Practitioner Registry
-            </h1>
+          <div className="space-y-6 w-full">
+            <ErrorBanner message={generalError} onRetry={handleReset} />
             <SearchForm
               onSearch={handleStartSearch}
               isLoading={false}
-              theme={theme}
               doctorType={currentDoctorType}
               onDoctorTypeChange={setCurrentDoctorType}
             />
           </div>
         )}
 
+        {/* State: Result Dossier */}
         {viewState === 'result' && doctorData && (
-          <DoctorDossier doctor={doctorData} onReset={handleReset} theme={theme} />
+          <DoctorDossier doctor={doctorData} onReset={handleReset} />
         )}
 
+        {/* State: Idle (Home Search Form) */}
         {viewState === 'idle' && (
-          <div className="space-y-6">
-            <h1 className={`text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] max-w-3xl ${
-              isDark ? 'text-[#f2fdf4]' : 'text-slate-900'
-            }`}>
-              Verify Medical & Dental Practitioner Registry
-            </h1>
-            <SearchForm
-              onSearch={handleStartSearch}
-              isLoading={false}
-              theme={theme}
-              doctorType={currentDoctorType}
-              onDoctorTypeChange={setCurrentDoctorType}
-            />
-          </div>
+          <SearchForm
+            onSearch={handleStartSearch}
+            isLoading={false}
+            doctorType={currentDoctorType}
+            onDoctorTypeChange={setCurrentDoctorType}
+          />
         )}
       </main>
 
-      {/* CAPTCHA Modal Relay */}
+      {/* CAPTCHA Relay Modal */}
       <CaptchaModal
         isOpen={isCaptchaOpen}
         sessionId={sessionData?.sessionId}
@@ -260,20 +221,30 @@ export default function App() {
         onRefresh={handleRefreshCaptcha}
         onSubmit={handleSubmitCaptcha}
         onClose={handleCloseCaptcha}
-        theme={theme}
       />
 
-      {/* Footer */}
-      <footer className={`border-t py-6 px-4 sm:px-8 text-xs transition-colors ${
-        isDark ? 'border-[#d4f870]/15 bg-[#07170c] text-zinc-400' : 'border-slate-200 bg-white text-slate-500'
-      }`}>
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-          <span className="font-semibold tracking-wide">
-            Bangladesh Medical & Dental Council (BMDC) Verification Gateway
-          </span>
-          <span className="text-[11px] opacity-75">
-            Official Public Registry Portal
-          </span>
+      {/* Clean, Minimized Footer */}
+      <footer className="w-full bg-surface-container-low mt-16 sm:mt-24 border-t border-on-surface/10 py-6 sm:py-8 print:hidden">
+        <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-label-code text-secondary text-center sm:text-left">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+            <span className="font-bold text-primary">BMDC Wrapper</span>
+            <span>•</span>
+            <span>Unofficial web wrapper for BMDC registry</span>
+            <span>•</span>
+            <span>Made by <strong className="text-primary font-bold">Alif Khan</strong></span>
+          </div>
+
+          <div>
+            <a
+              href="https://verify.bmdc.org.bd/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-secondary underline underline-offset-4 tracking-wider font-semibold inline-flex items-center gap-1"
+            >
+              <span>Original Directory (verify.bmdc.org.bd)</span>
+              <span>↗</span>
+            </a>
+          </div>
         </div>
       </footer>
     </div>
